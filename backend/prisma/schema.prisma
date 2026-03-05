@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int     @id @default(autoincrement())
+  name            String  @db.VarChar(128)
+  email           String  @unique @db.VarChar(255)
+  password_hash   String  @db.VarChar(255)
+  role            String  @default("student") @db.VarChar(20)
+  dob             DateTime? @db.Date
+  gender          String  @default("unknown") @db.VarChar(10)
+  country         String  @default("unspecified") @db.VarChar(50)
+  profile_photo   String  @default("default-photo.jpg") @db.VarChar(255)
+  english_level   String? @default("Beginner") @db.VarChar(50)
+  improve_skills  String? @db.Text
+  timezone        String  @default("UTC") @db.VarChar(50)
+
+  bookedLessons   Lesson[] @relation("StudentLessons")
+
+  @@map("user")
+}
+
+// Admin creates availability slots (large time blocks)
+model AvailabilitySlot {
+  id          Int      @id @default(autoincrement())
+  startTime   DateTime @map("start_time")
+  endTime     DateTime @map("end_time")
+  notes       String?  @db.Text
+  
+  lessons     Lesson[] @relation("SlotLessons")
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([startTime, endTime])
+  @@map("availability_slot")
+}
+
+// Student books specific lessons within availability slots
+model Lesson {
+  id                  Int      @id @default(autoincrement())
+  title               String   @default("English Lesson") @db.VarChar(255)
+  startTime           DateTime @map("start_time")
+  endTime             DateTime @map("end_time")
+  status              String   @default("booked") @db.VarChar(20)
+  notes               String?  @db.Text
+  
+  availabilitySlotId  Int?     @map("availability_slot_id")
+  availabilitySlot    AvailabilitySlot? @relation("SlotLessons", fields: [availabilitySlotId], references: [id], onDelete: Cascade)
+  
+  studentId           Int      @map("student_id")
+  student             User     @relation("StudentLessons", fields: [studentId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([studentId])
+  @@index([availabilitySlotId])
+  @@index([startTime, endTime])
+  @@map("lesson")
+}

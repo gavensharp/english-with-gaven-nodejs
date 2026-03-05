@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+===========================================
+COLOR PALETTE - English with Gaven
+===========================================
+
+Recommended Palette (8 Colors):
+
+1. PRIMARY - Light Green (#88E788)
+   - Logo, primary CTAs, success states
+   - Works well on dark backgrounds (contrast ratio ~13.83)
+   - Used in dark mode for headings and emphasis
+   - ⚠ Avoid using as text color on white backgrounds (fails contrast checks)
+
+2. SECONDARY - Light Yellow (#FFFFC5)
+   - Warnings, subtle accents
+   - Background highlights and notifications
+
+3. ACCENT 1 - Orchid/Purple (#ED80E9)
+   - Highlights, tags, hover effects
+   - Use sparingly for emphasis
+
+4. ACCENT 2 - Misty Blue (#B5C7EB / Dark: #7B9FD3)
+   - Save buttons use darker variant (SaveCancelButtons component)
+   - Alternative accent for variety
+   - Softer alternative to primary
+
+5. ACCENT 3 - Warm Orange (#FFB84D)
+   - Info buttons (InfoButton component)
+   - Call-to-action elements and highlights
+   - Warm and inviting accent for engagement
+
+6. NEUTRAL - Light Gray (#D4D4D4)
+   - Text, dividers, disabled states
+   - Border colors and separators
+
+7. DARK BASE - Dark Green (#114F11)
+   - Main headings in light mode (h1, h2, h3, etc.)
+   - Footer, contrast areas
+   - High contrast text on light backgrounds
+   - Provides excellent readability and brand consistency
+
+8. BASE - White/Dark (#FFFFFF / #0F1419)
+   - Backgrounds, cards, clean layouts
+   - Base color for most content areas
+   - Automatically switches in dark mode
+
+✅ ACCESSIBILITY TIPS:
+- Always test color combinations for WCAG AA compliance
+- Light green text: Use only on dark backgrounds
+- Dark green text: Use on light backgrounds for headings
+- Test with colorblindness simulations (Protanopia, Deuteranopia)
+- Maintain minimum 4.5:1 contrast ratio for body text
+- Maintain minimum 3:1 contrast ratio for large text
+
+===========================================
+*/
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-200;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Headings use dark green for high contrast in light mode, light green in dark mode */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-primary-dark font-bold;
+  }
+}
+
+@layer components {
+  /* Card styling */
+  .card {
+    @apply bg-white border-2 border-neutral rounded-lg shadow-sm transition-all hover:shadow-md;
+  }
+
+  /* Button base styles */
+  .btn {
+    @apply px-6 py-2 rounded-lg font-semibold transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-dark hover:bg-primary-light border-2 border-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-primary-dark hover:bg-secondary-dark border-2 border-secondary;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary-dark hover:bg-primary hover:text-primary-dark;
+  }
+
+  .btn-outline-primary {
+    @apply border-2 border-primary text-primary-dark bg-white hover:bg-primary hover:text-primary-dark;
+  }
+
+  .btn-outline-secondary {
+    @apply border-2 border-accent-orange text-primary-dark bg-white hover:bg-accent-orange hover:text-white;
+  }
+
+  /* SaveCancelButtons component uses:
+     - Save: bg-accent-blue (Misty Blue #B5C7EB) for save actions
+     - Cancel: bg-red-100 text-red-700 for cancel/destructive secondary actions
+  */
+
+  .input-field {
+    @apply w-full border border-neutral rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom FullCalendar overrides */
+.fc {
+  font-family: inherit;
+}
+
+.fc .fc-button {
+  @apply bg-accent-blue-dark border-accent-blue-dark text-white;
+}
+
+.fc .fc-button:hover {
+  background-color: #6a8cc4 !important;
+  border-color: #6a8cc4 !important;
+}
+
+.fc .fc-button:disabled {
+  @apply bg-gray-300 border-gray-300 cursor-not-allowed;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #5a7ab0 !important;
+  border-color: #5a7ab0 !important;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  @apply border-gray-200;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  @apply border-gray-200;
+}
