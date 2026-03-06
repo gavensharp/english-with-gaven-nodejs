@@ -244,12 +244,9 @@ export default function ChatPanel({
             <div
               className={`max-w-[75%] rounded-lg px-4 py-2 ${
                 message.isOwn
-                  ? "bg-blue-500 text-white"
+                  ? "bg-secondary text-gray-800"
                   : "bg-gray-200 text-gray-800"
               }`}>
-              {!message.isOwn && (
-                <p className="text-xs font-semibold mb-1">{message.sender}</p>
-              )}
               <p className="text-sm">{message.text}</p>
             </div>
             <span className="text-xs text-gray-500 mt-1">
@@ -270,12 +267,12 @@ export default function ChatPanel({
             onKeyPress={handleKeyPress}
             placeholder="Type a message..."
             disabled={!isConnected}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-orange text-gray-800 disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
             onClick={handleSend}
             disabled={!inputText.trim() || !isConnected}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
+            className="px-6 py-2 bg-accent-orange text-white rounded-lg hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
             Send
           </button>
         </div>

@@ -80,7 +80,15 @@ export default function SessionPage() {
   }, []);
 
   const handleLeave = () => {
-    router.push("/");
+    // Route users back to their respective dashboards based on role
+    if (user?.role === "admin") {
+      router.push("/admin/dashboard");
+    } else if (user?.role === "student") {
+      router.push("/student/dashboard");
+    } else {
+      // Fallback to home if role is not set
+      router.push("/");
+    }
   };
 
   return (
@@ -88,7 +96,7 @@ export default function SessionPage() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-            Video Session: {channelName}
+            V-Classroom
           </h1>
           <button
             onClick={handleLeave}
