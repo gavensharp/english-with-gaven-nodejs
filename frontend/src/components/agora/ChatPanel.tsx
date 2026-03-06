@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { fetchAgoraRtmToken } from "@/lib/agora";
 
 interface Message {
   id: string;
@@ -55,22 +56,22 @@ export default function ChatPanel({
           console.log("✅ [ChatPanel] Agora Chat SDK loaded");
         }
 
-        // Determine user ID and token based on role
+        // Determine user ID based on role
         const isAdmin = userRole === "admin";
         const userId = isAdmin ? "user1" : "user2";
-        const token = isAdmin
-          ? process.env.NEXT_PUBLIC_AGORA_CHAT_USER1_TOKEN
-          : process.env.NEXT_PUBLIC_AGORA_CHAT_USER2_TOKEN;
 
         console.log("🔵 [ChatPanel] Role:", userRole);
         console.log("🔵 [ChatPanel] User ID:", userId);
-        console.log("🔵 [ChatPanel] Token exists:", !!token);
+
+        // Fetch fresh token from backend server
+        console.log("🔵 [ChatPanel] Fetching token from backend...");
+        const token = await fetchAgoraRtmToken(userId);
+
+        console.log("✅ [ChatPanel] Token received from backend");
         console.log("🔵 [ChatPanel] Token length:", token?.length);
 
         if (!token) {
-          throw new Error(
-            `Token not found for ${isAdmin ? "admin" : "student"}`,
-          );
+          throw new Error("Failed to get token from backend");
         }
 
         // Open connection with token
@@ -81,6 +82,7 @@ export default function ChatPanel({
 
         console.log("✅ [ChatPanel] Connected successfully");
         setIsConnected(true);
+        setError(""); // Clear any previous errors
 
         // Listen for incoming messages
         chatClient.addEventHandler("chatHandler", {
@@ -120,7 +122,28 @@ export default function ChatPanel({
           errData: err?.data,
           errStack: err?.stack,
         });
-        setError(err.message || "Failed to connect to chat");
+
+        // Provide more helpful error messages
+        let errorMessage = "Failed to connect to chat";
+
+        if (err?.message?.includes("token")) {
+          errorMessage =
+            "Authentication failed. Please try refreshing the page.";
+        } else if (
+          err?.message?.includes("network") ||
+          err?.message?.includes("fetch")
+        ) {
+          errorMessage =
+            "Network error. Please check your internet connection.";
+        } else if (err?.code === 2) {
+          errorMessage = "Authentication failed. Invalid token.";
+        } else if (err?.code === 1) {
+          errorMessage = "Connection failed. Please try again.";
+        } else if (err?.message) {
+          errorMessage = err.message;
+        }
+
+        setError(errorMessage);
       }
     };
 

@@ -7,6 +7,7 @@ import userRoutes from "./routes/user";
 import lessonRoutes from "./routes/lessons";
 import availabilityRoutes from "./routes/availability";
 import adminRoutes from "./routes/admin";
+import agoraRoutes from "./routes/agora";
 import { testDatabaseConnection } from "./utils/db";
 
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/agora", agoraRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
