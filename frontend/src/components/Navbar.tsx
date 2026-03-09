@@ -41,6 +41,11 @@ export default function Navbar() {
               About
             </Link>
             <Link
+              href="/grammar"
+              className="text-grey-700 hover:text-primary transition">
+              Grammar
+            </Link>
+            <Link
               href="/contact"
               className="text-grey-700 hover:text-primary transition">
               Contact
@@ -106,6 +111,11 @@ export default function Navbar() {
                 href="/about"
                 className="text-grey-700 hover:text-primary transition">
                 About
+              </Link>
+              <Link
+                href="/grammar"
+                className="text-grey-700 hover:text-primary transition">
+                Grammar
               </Link>
               <Link
                 href="/contact"

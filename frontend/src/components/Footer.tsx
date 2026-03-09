@@ -64,13 +64,13 @@ export default function Footer() {
                   About
                 </Link>
               </li>
-              {/* <li>
+              <li>
                 <Link
                   href="/grammar"
                   className="text-gray-700 hover:text-primary transition">
                   Grammar
                 </Link>
-              </li> */}
+              </li>
             </ul>
           </div>
 
