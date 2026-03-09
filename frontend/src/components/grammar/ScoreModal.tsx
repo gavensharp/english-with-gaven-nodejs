@@ -84,7 +84,7 @@ export default function ScoreModal({
           <div className="flex gap-4">
             <button
               onClick={onReset}
-              className="flex-1 bg-primary hover:bg-primary-light text-primary-dark font-semibold py-3 px-6 rounded-lg transition-colors border-2 border-primary">
+              className="flex-1 bg-accent-orchid hover:bg-accent-orchid/80 text-white font-semibold py-3 px-6 rounded-lg transition-colors border-2 border-accent-orchid">
               Try Again
             </button>
             <button

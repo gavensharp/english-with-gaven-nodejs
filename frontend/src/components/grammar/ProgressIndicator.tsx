@@ -15,7 +15,7 @@ export default function ProgressIndicator({
 
   return (
     <div className="mb-6">
-      <div className="bg-white border-2 border-neutral rounded-lg p-3 md:p-4 shadow-md">
+      <div className="bg-white border-2 border-neutral rounded-lg p-3 md:p-4 shadow-md hover:border-accent-orchid transition-all">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <span className="text-gray-700 font-medium text-sm md:text-base whitespace-nowrap">
@@ -23,7 +23,7 @@ export default function ProgressIndicator({
             </span>
             <div className="bg-gray-200 rounded-full h-2.5 md:h-3 flex-grow sm:flex-grow-0 sm:w-40 md:w-48 overflow-hidden">
               <div
-                className="bg-primary h-full rounded-full transition-all duration-500 ease-in-out"
+                className="bg-accent-blue-dark h-full rounded-full transition-all duration-500 ease-in-out"
                 style={{ width: `${percentage}%` }}
               />
             </div>

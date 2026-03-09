@@ -54,7 +54,7 @@ export default function GrammarQuestionCard({
   return (
     <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
       {/* Question Card */}
-      <div className="bg-white border-2 border-neutral rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-white border-2 border-neutral rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
         <h3 className="text-lg font-semibold mb-4 text-primary-dark">
           Question {question.id}
         </h3>
@@ -63,7 +63,7 @@ export default function GrammarQuestionCard({
           <select
             value={selectedAnswer}
             onChange={(e) => handleChange(e.target.value)}
-            className="mx-2 px-3 py-2 border-2 border-neutral rounded-lg focus:border-primary focus:outline-none transition-colors text-base min-w-[120px] cursor-pointer">
+            className="mx-2 px-3 py-2 border-2 border-neutral rounded-lg focus:border-accent-orchid focus:outline-none transition-colors text-base min-w-[120px] cursor-pointer">
             <option value="">____</option>
             {question.options.map((option) => (
               <option key={option.value} value={option.value}>

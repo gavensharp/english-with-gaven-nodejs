@@ -552,7 +552,7 @@ export default function BeginnerPrepositionsPage() {
           <button
             onClick={handleCheckScore}
             disabled={attemptedCount === 0}
-            className="bg-primary hover:bg-primary-light text-primary-dark font-bold text-lg py-4 px-12 rounded-lg transition-all border-2 border-primary disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
+            className="bg-accent-blue-dark hover:bg-accent-blue text-white font-bold text-lg py-4 px-12 rounded-lg transition-all border-2 border-accent-blue-dark disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
             Check Your Score
           </button>
         </div>

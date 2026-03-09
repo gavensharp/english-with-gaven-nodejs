@@ -41,7 +41,7 @@ export default function GrammarPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {/* Beginner Level */}
             <Link href="/grammar/prepositions/beginner">
-              <div className="bg-white border-2 border-neutral rounded-lg p-6 shadow-sm hover:shadow-lg hover:border-primary transition-all cursor-pointer">
+              <div className="bg-white border-2 border-neutral rounded-lg p-6 shadow-sm hover:shadow-lg hover:border-accent-orchid transition-all cursor-pointer">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-primary-dark">
                     Beginner
@@ -59,27 +59,36 @@ export default function GrammarPage() {
                   <li>• Behind, between, next to</li>
                   <li>• To, into, onto, over</li>
                 </ul>
-                <div className="text-primary font-semibold hover:underline">
+                <div className="text-accent-orange font-semibold hover:underline">
                   Start Practice →
                 </div>
               </div>
             </Link>
 
             {/* Intermediate Level */}
-            <div className="bg-white border-2 border-neutral-light rounded-lg p-6 shadow-sm opacity-60 cursor-not-allowed">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-500">
-                  Intermediate
-                </h3>
-                <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
-                  B1-B2
-                </span>
+            <Link href="/grammar/prepositions/intermediate">
+              <div className="bg-white border-2 border-neutral rounded-lg p-6 shadow-sm hover:shadow-lg hover:border-accent-orchid transition-all cursor-pointer">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-primary-dark">
+                    Intermediate
+                  </h3>
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                    B1-B2
+                  </span>
+                </div>
+                <p className="text-gray-700 mb-4">
+                  Advanced prepositions and prepositional phrases.
+                </p>
+                <ul className="text-sm text-gray-600 space-y-1 mb-4">
+                  <li>• Beside, opposite, beyond</li>
+                  <li>• Since, during, due to</li>
+                  <li>• Multi-word prepositions</li>
+                </ul>
+                <div className="text-accent-orange font-semibold hover:underline">
+                  Start Practice →
+                </div>
               </div>
-              <p className="text-gray-500 mb-4">
-                Advanced prepositions and prepositional phrases.
-              </p>
-              <div className="text-gray-400 font-semibold">Coming Soon</div>
-            </div>
+            </Link>
 
             {/* Advanced Level */}
             <div className="bg-white border-2 border-neutral-light rounded-lg p-6 shadow-sm opacity-60 cursor-not-allowed">
