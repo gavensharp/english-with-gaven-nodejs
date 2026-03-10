@@ -52,7 +52,8 @@ export default function GrammarQuestionCard({
   const isCorrect = selectedAnswer === question.correctAnswer;
 
   return (
-    <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
+    <div
+      className={`${question.imageSrc ? "grid md:grid-cols-2 gap-6 items-center" : ""} mb-8`}>
       {/* Question Card */}
       <div className="bg-white border-2 border-neutral rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
         <h3 className="text-lg font-semibold mb-4 text-primary-dark">

@@ -32,27 +32,27 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             <Link
               href="/"
-              className="text-grey-700 hover:text-primary transition">
+              className="text-grey-700 hover:text-accent-orange transition">
               Home
             </Link>
             <Link
               href="/about"
-              className="text-grey-700 hover:text-primary transition">
+              className="text-grey-700 hover:text-accent-orange transition">
               About
             </Link>
             <Link
               href="/grammar"
-              className="text-grey-700 hover:text-primary transition">
+              className="text-grey-700 hover:text-accent-orange transition">
               Grammar
             </Link>
             <Link
               href="/contact"
-              className="text-grey-700 hover:text-primary transition">
+              className="text-grey-700 hover:text-accent-orange transition">
               Contact
             </Link>
             <Link
               href="/calendar"
-              className="text-grey-700 hover:text-primary transition">
+              className="text-grey-700 hover:text-accent-orange transition">
               Calendar
             </Link>
 
@@ -104,27 +104,27 @@ export default function Navbar() {
             <div className="flex flex-col gap-4 pt-4">
               <Link
                 href="/"
-                className="text-grey-700 hover:text-primary transition">
+                className="text-grey-700 hover:text-accent-orange transition">
                 Home
               </Link>
               <Link
                 href="/about"
-                className="text-grey-700 hover:text-primary transition">
+                className="text-grey-700 hover:text-accent-orange transition">
                 About
               </Link>
               <Link
                 href="/grammar"
-                className="text-grey-700 hover:text-primary transition">
+                className="text-grey-700 hover:text-accent-orange transition">
                 Grammar
               </Link>
               <Link
                 href="/contact"
-                className="text-grey-700 hover:text-primary transition">
+                className="text-grey-700 hover:text-accent-orange transition">
                 Contact
               </Link>
               <Link
                 href="/calendar"
-                className="text-grey-700 hover:text-primary transition">
+                className="text-grey-700 hover:text-accent-orange transition">
                 Calendar
               </Link>
 

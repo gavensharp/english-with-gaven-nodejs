@@ -28,10 +28,10 @@ export const metadata: Metadata = {
 
 export default function About() {
   return (
-    <main>
+    <main className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="py-10 bg-white">
-        <div className="container mx-auto">
+      <section className="py-12">
+        <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             {/* Hero Content */}
             <div className="text-center md:text-left">
@@ -69,9 +69,9 @@ export default function About() {
         </div>
       </section>
       {/* Teaching Experience Section */}
-      <section className="py-10">
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-12">
+          <h2 className="text-2xl font-bold text-center text-primary-dark mb-12">
             Teaching Experience
           </h2>
 
@@ -131,9 +131,9 @@ export default function About() {
         </div>
       </section>
       {/* Teaching Highlights Section */}
-      <section className="py-10 bg-white">
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-12">
+          <h2 className="text-2xl font-bold text-center text-primary-dark mb-12">
             Teaching Highlights
           </h2>
 
@@ -229,9 +229,9 @@ export default function About() {
         </div>
       </section>
       {/* Specialising In Section */}
-      <section className="py-10">
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-12">
+          <h2 className="text-2xl font-bold text-center text-primary-dark mb-12">
             Specialising In
           </h2>
 

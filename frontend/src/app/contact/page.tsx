@@ -26,10 +26,10 @@ export const metadata: Metadata = {
 
 export default function Contact() {
   return (
-    <main>
+    <main className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="mt-5 py-5">
-        <div className="container mx-auto text-center">
+      <section className="py-12">
+        <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl font-bold text-primary-dark pb-3">
             Get in Touch
           </h1>
@@ -41,12 +41,14 @@ export default function Contact() {
       </section>
 
       {/* Contact Form + Info Section */}
-      <section className="py-10 bg-white">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
             {/* Contact Form */}
             <div>
-              <h2 className="text-2xl font-bold mb-6">Send Me a Message</h2>
+              <h2 className="text-2xl font-bold text-primary-dark mb-6">
+                Send Me a Message
+              </h2>
               <form
                 action="https://formspree.io/f/mkoopkeo"
                 method="POST"
@@ -132,7 +134,9 @@ export default function Contact() {
             <div className="space-y-8">
               {/* Email Cards */}
               <div>
-                <h2 className="text-2xl font-bold mb-6">Email Me Directly</h2>
+                <h2 className="text-2xl font-bold text-primary-dark mb-6">
+                  Email Me Directly
+                </h2>
 
                 <div className="card p-6 mb-4">
                   <h3 className="font-bold text-lg mb-2">Primary Email</h3>
@@ -155,7 +159,7 @@ export default function Contact() {
 
               {/* Social Media Links */}
               <div>
-                <h2 className="text-2xl font-bold mb-6">
+                <h2 className="text-2xl font-bold text-primary-dark mb-6">
                   Connect on Social Media
                 </h2>
                 <div className="flex gap-4 justify-start">

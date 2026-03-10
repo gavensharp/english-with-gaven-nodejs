@@ -3,14 +3,14 @@ import CTAButton from "@/components/CTAButton";
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="py-10 bg-white ">
-        <div className="container mx-auto">
+      <section className="py-12">
+        <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             {/* Hero Content */}
             <div className="text-center md:text-left">
-              <h1 className="text-3xl pb-3 text-center">
+              <h1 className="text-3xl font-bold text-center text-primary-dark pb-3">
                 Welcome to English with Gaven!
               </h1>
               <p className="text-lg mb-4 text-center text-gray-700">
@@ -42,9 +42,11 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-10 bg-white ">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-12">My Services</h2>
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-center text-primary-dark mb-12">
+            My Services
+          </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Speaking English */}
@@ -153,9 +155,9 @@ export default function Home() {
       </section>
 
       {/* How to Get Started Section */}
-      <section className="py-10 ">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-12">
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-center text-primary-dark mb-12">
             How to Get Started
           </h2>
 
@@ -163,7 +165,7 @@ export default function Home() {
             {/* Step 1 */}
             <div className="flex gap-6 items-start">
               <div className="flex-shrink-0">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-dark text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 rounded-full bg-accent-orange flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   1
                 </div>
               </div>
@@ -182,7 +184,7 @@ export default function Home() {
             {/* Step 2 */}
             <div className="flex gap-6 items-start">
               <div className="flex-shrink-0">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-dark text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 rounded-full bg-accent-orange flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   2
                 </div>
               </div>
@@ -192,13 +194,13 @@ export default function Home() {
                   Select your plan to get started.{" "}
                   <a
                     href="/calendar"
-                    className="text-primary  underline hover:text-accent-orchid">
+                    className="text-primary  underline hover:text-accent-orange">
                     View
                   </a>{" "}
                   Gaven's availability schedule.{" "}
                   <a
                     href="/contact"
-                    className="text-primary  underline hover:text-accent-orchid">
+                    className="text-primary  underline hover:text-accent-orange">
                     Contact
                   </a>{" "}
                   Gaven to confirm your lesson times. Starting with a free
@@ -213,7 +215,7 @@ export default function Home() {
             {/* Step 3 */}
             <div className="flex gap-6 items-start">
               <div className="flex-shrink-0">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-dark text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 rounded-full bg-accent-orange flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   3
                 </div>
               </div>
@@ -235,7 +237,7 @@ export default function Home() {
             {/* Step 4 */}
             <div className="flex gap-6 items-start">
               <div className="flex-shrink-0">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-dark text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 rounded-full bg-accent-orange flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   4
                 </div>
               </div>
@@ -252,7 +254,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Plans Section */}
-      <section className="py-10 bg-white ">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-center mb-12">
             Pricing Plans

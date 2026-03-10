@@ -25,21 +25,21 @@ export default function Footer() {
               <li>
                 <Link
                   href="/login"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Login
                 </Link>
               </li>
               <li>
                 <Link
                   href="/signup"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Sign Up
                 </Link>
               </li>
               <li>
                 <Link
                   href="/contact"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Contact
                 </Link>
               </li>
@@ -53,21 +53,21 @@ export default function Footer() {
               <li>
                 <Link
                   href="/"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   href="/about"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   About
                 </Link>
               </li>
               <li>
                 <Link
                   href="/grammar"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Grammar
                 </Link>
               </li>
@@ -81,21 +81,21 @@ export default function Footer() {
               <li>
                 <Link
                   href="/faq"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   FAQ
                 </Link>
               </li>
               <li>
                 <Link
                   href="/terms"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Terms of Service
                 </Link>
               </li>
               <li>
                 <Link
                   href="/privacy"
-                  className="text-gray-700 hover:text-primary transition">
+                  className="text-gray-700 hover:text-accent-orange transition">
                   Privacy Policy
                 </Link>
               </li>
