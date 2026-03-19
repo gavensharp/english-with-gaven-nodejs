@@ -151,6 +151,11 @@ Recommended Palette (8 Colors):
   font-family: inherit;
 }
 
+.fc .fc-toolbar-title {
+  color: #114f11;
+  font-weight: 700;
+}
+
 .fc .fc-button {
   @apply bg-accent-blue-dark border-accent-blue-dark text-white;
 }
@@ -176,4 +181,17 @@ Recommended Palette (8 Colors):
 
 .fc-theme-standard .fc-scrollgrid {
   @apply border-gray-200;
+}
+
+.fc .fc-col-header-cell {
+  background-color: #f8fafc;
+}
+
+.fc .fc-timegrid-slot {
+  height: 2.75rem;
+}
+
+.fc .fc-event {
+  border-radius: 8px;
+  font-weight: 600;
 }

@@ -14,7 +14,13 @@ import {
 } from "@/services/lessonService";
 import { getToken } from "@/lib/auth";
 
-export default function StudentCalendar() {
+interface StudentCalendarProps {
+  readOnly?: boolean;
+}
+
+export default function StudentCalendar({
+  readOnly = false,
+}: StudentCalendarProps) {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(
@@ -40,13 +46,19 @@ export default function StudentCalendar() {
       // Fetch user's booked lessons if logged in
       const token = getToken();
       let myLessons: Lesson[] = [];
-      if (token) {
+      if (token && !readOnly) {
         try {
           myLessons = await getMyLessons(token);
         } catch (err) {
           console.error("Error fetching my lessons:", err);
         }
       }
+
+      const myLessonIds = new Set(
+        myLessons
+          .filter((lesson) => lesson.status !== "cancelled")
+          .map((lesson) => lesson.id),
+      );
 
       // Format available slots for FullCalendar
       const formattedSlots = slots.map((slot) => {
@@ -67,11 +79,11 @@ export default function StudentCalendar() {
 
         return {
           id: slot.id.toString(),
-          title: `Available (${availableMinutes}min free)`,
+          title: "Available",
           start: slot.startTime,
           end: slot.endTime,
-          backgroundColor: availableMinutes >= 30 ? "#10b981" : "#fbbf24", // green if 30+ min available, yellow otherwise
-          borderColor: availableMinutes >= 30 ? "#059669" : "#f59e0b",
+          backgroundColor: "#10b981",
+          borderColor: "#059669",
           extendedProps: {
             type: "available",
             slotData: slot,
@@ -80,22 +92,32 @@ export default function StudentCalendar() {
         };
       });
 
-      // Format booked lessons for FullCalendar
-      const formattedLessons = myLessons
-        .filter((lesson) => lesson.status !== "cancelled")
-        .map((lesson) => ({
-          id: `lesson-${lesson.id}`,
-          title: lesson.title || "Your Lesson",
-          start: lesson.startTime,
-          end: lesson.endTime,
-          backgroundColor: "#3b82f6", // blue for booked lessons
-          borderColor: "#2563eb",
-          textColor: "#ffffff",
-          extendedProps: {
-            type: "booked",
-            lessonData: lesson,
-          },
-        }));
+      // Render booked portions of slots for everyone, but keep labels privacy-safe.
+      const formattedLessons = slots.flatMap((slot) =>
+        slot.lessons
+          .filter((lesson) => lesson.status !== "cancelled")
+          .map((lesson) => {
+            const isMine = myLessonIds.has(lesson.id);
+            const fullLesson = myLessons.find(
+              (myLesson) => myLesson.id === lesson.id,
+            );
+
+            return {
+              id: `lesson-${lesson.id}`,
+              title: isMine ? fullLesson?.title || "Your Lesson" : "Booked",
+              start: lesson.startTime,
+              end: lesson.endTime,
+              backgroundColor: "#FFB84D", // warm orange booked state
+              borderColor: "#f59e0b",
+              textColor: "#114F11",
+              extendedProps: {
+                type: "booked",
+                isMine,
+                lessonData: fullLesson || lesson,
+              },
+            };
+          }),
+      );
 
       // Combine both available slots and booked lessons
       setEvents([...formattedSlots, ...formattedLessons]);
@@ -111,6 +133,15 @@ export default function StudentCalendar() {
 
     // If it's a booked lesson, show details
     if (eventType === "booked") {
+      const isMine = info.event.extendedProps.isMine;
+
+      if (!isMine) {
+        alert(
+          "This time is already booked. Please choose an available time slot.",
+        );
+        return;
+      }
+
       const lessonData = info.event.extendedProps.lessonData;
       alert(
         `Your Booked Lesson:\n\n` +
@@ -126,6 +157,14 @@ export default function StudentCalendar() {
     // Handle available slot booking
     const slotData = info.event.extendedProps.slotData;
     const availableMinutes = info.event.extendedProps.availableMinutes;
+
+    if (readOnly) {
+      alert(
+        "Log in to book lessons. You can currently view availability only.",
+      );
+      window.location.href = "/login";
+      return;
+    }
 
     if (availableMinutes < 30) {
       alert(
@@ -258,8 +297,8 @@ export default function StudentCalendar() {
   const availableTimeSlots = getAvailableTimeSlots();
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="mb-4">
+    <div className="bg-white rounded-xl shadow-lg border border-neutral/50 p-6">
+      <div className="mb-5">
         <h2 className="text-2xl font-bold mb-2">Book a Lesson</h2>
         <p className="text-gray-600">
           Click on an available time slot to book your lesson (30 or 60
@@ -267,38 +306,40 @@ export default function StudentCalendar() {
         </p>
       </div>
 
-      <div className="mb-4 flex gap-4 text-sm">
+      <div className="mb-4 flex flex-wrap gap-4 text-sm rounded-lg bg-gray-50 px-4 py-3 border border-gray-200">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-green-500 rounded"></div>
-          <span>Available (30+ min)</span>
+          <span>Available</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-          <span>Limited availability</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-          <span>Your booked lessons</span>
+          <div
+            className="w-4 h-4 rounded"
+            style={{ backgroundColor: "#FFB84D" }}></div>
+          <span>Booked</span>
         </div>
       </div>
 
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        events={events}
-        eventClick={handleEventClick}
-        height="auto"
-        slotMinTime="06:00:00"
-        slotMaxTime="22:00:00"
-        allDaySlot={false}
-        nowIndicator={true}
-        editable={false}
-      />
+      <div className="rounded-lg overflow-hidden border border-gray-200">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          events={events}
+          eventClick={handleEventClick}
+          height="auto"
+          slotMinTime="06:00:00"
+          slotMaxTime="22:00:00"
+          allDaySlot={false}
+          nowIndicator={true}
+          editable={false}
+          eventDisplay="block"
+          dayMaxEvents={true}
+        />
+      </div>
 
       {/* Booking Modal */}
       {showBookingModal && selectedSlot && (

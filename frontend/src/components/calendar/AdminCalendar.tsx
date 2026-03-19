@@ -68,32 +68,24 @@ export default function AdminCalendar() {
         });
       });
 
-      // Add booked lessons (blue overlays)
-      lessons.forEach((lesson) => {
-        let backgroundColor = "#3b82f6"; // blue - booked
-        let borderColor = "#2563eb";
-
-        if (lesson.status === "completed") {
-          backgroundColor = "#6b7280"; // gray
-          borderColor = "#4b5563";
-        } else if (lesson.status === "cancelled") {
-          backgroundColor = "#ef4444"; // red
-          borderColor = "#dc2626";
-        }
-
-        calendarEvents.push({
-          id: `lesson-${lesson.id}`,
-          title: `${lesson.student?.name || "Student"} - ${formatTime(lesson.startTime)}`,
-          start: lesson.startTime,
-          end: lesson.endTime,
-          backgroundColor,
-          borderColor,
-          extendedProps: {
-            type: "lesson",
-            lessonData: lesson,
-          },
+      // Add lessons as booked overlays (cancelled lessons are hidden)
+      lessons
+        .filter((lesson) => lesson.status !== "cancelled")
+        .forEach((lesson) => {
+          calendarEvents.push({
+            id: `lesson-${lesson.id}`,
+            title: `${lesson.student?.name || "Student"} - ${formatTime(lesson.startTime)}`,
+            start: lesson.startTime,
+            end: lesson.endTime,
+            backgroundColor: "#FFB84D",
+            borderColor: "#f59e0b",
+            textColor: "#114F11",
+            extendedProps: {
+              type: "lesson",
+              lessonData: lesson,
+            },
+          });
         });
-      });
 
       setEvents(calendarEvents);
     } catch (error) {
@@ -209,19 +201,13 @@ export default function AdminCalendar() {
       <div className="mb-4 flex gap-4 text-sm">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-green-500 rounded"></div>
-          <span>Available Time Slots</span>
+          <span>Available</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-          <span>Booked Lessons</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-500 rounded"></div>
-          <span>Completed</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-red-500 rounded"></div>
-          <span>Cancelled</span>
+          <div
+            className="w-4 h-4 rounded"
+            style={{ backgroundColor: "#FFB84D" }}></div>
+          <span>Booked</span>
         </div>
       </div>
 
