@@ -41,7 +41,9 @@ export const bookLesson = async (req: Request, res: Response) => {
     }
 
     if (!slotId || !startTime || !endTime) {
-      return res.status(400).json({ error: "Slot ID, start time, and end time are required" });
+      return res
+        .status(400)
+        .json({ error: "Slot ID, start time, and end time are required" });
     }
 
     const start = new Date(startTime);
@@ -58,7 +60,7 @@ export const bookLesson = async (req: Request, res: Response) => {
     // Validate duration (30min or 60min)
     const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
     console.log("Duration in minutes:", durationMinutes);
-    
+
     if (durationMinutes !== 30 && durationMinutes !== 60) {
       return res.status(400).json({ error: "Lesson must be 30 or 60 minutes" });
     }
@@ -84,9 +86,10 @@ export const bookLesson = async (req: Request, res: Response) => {
       console.log("=== VALIDATION FAILED ===");
       console.log("start < slot.start:", start < availabilitySlot.startTime);
       console.log("end > slot.end:", end > availabilitySlot.endTime);
-      return res.status(400).json({ error: "Requested time is outside the availability slot" });
+      return res
+        .status(400)
+        .json({ error: "Requested time is outside the availability slot" });
     }
-    
 
     // Check for overlapping lessons in this slot
     const overlapping = availabilitySlot.lessons.find((lesson) => {
@@ -160,12 +163,13 @@ export const cancelLesson = async (req: Request, res: Response) => {
         .json({ error: "Not authorized to cancel this lesson" });
     }
 
-    // Check if lesson is at least 24 hours away (optional business rule)
+    // Cancellation policy: allow cancellation only when the lesson is more than 1 hour away.
     const hoursUntilLesson =
       (lesson.startTime.getTime() - new Date().getTime()) / (1000 * 60 * 60);
-    if (hoursUntilLesson < 24) {
+    if (hoursUntilLesson < 1) {
       return res.status(400).json({
-        error: "Cannot cancel lesson less than 24 hours before start time",
+        error:
+          "Cancellation is not allowed within 1 hour of the scheduled time. If cancelled within 1 hour or after the lesson has started, the full lesson amount is charged.",
       });
     }
 
@@ -175,7 +179,8 @@ export const cancelLesson = async (req: Request, res: Response) => {
     });
 
     res.json({
-      message: "Lesson cancelled successfully",
+      message:
+        "Lesson cancelled successfully. For timely processing, please inform Gaven by email at least 2 hours in advance.",
     });
   } catch (error) {
     console.error("Error cancelling lesson:", error);

@@ -40,6 +40,48 @@ export default function Dashboard() {
   const [englishLevel, setEnglishLevel] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [levelUpdateStatus, setLevelUpdateStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [profileUpdateStatus, setProfileUpdateStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [photoUploadStatus, setPhotoUploadStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!levelUpdateStatus) return;
+
+    const timeout = setTimeout(() => {
+      setLevelUpdateStatus(null);
+    }, 4000);
+
+    return () => clearTimeout(timeout);
+  }, [levelUpdateStatus]);
+
+  useEffect(() => {
+    if (!profileUpdateStatus) return;
+
+    const timeout = setTimeout(() => {
+      setProfileUpdateStatus(null);
+    }, 4000);
+
+    return () => clearTimeout(timeout);
+  }, [profileUpdateStatus]);
+
+  useEffect(() => {
+    if (!photoUploadStatus) return;
+
+    const timeout = setTimeout(() => {
+      setPhotoUploadStatus(null);
+    }, 4000);
+
+    return () => clearTimeout(timeout);
+  }, [photoUploadStatus]);
 
   // Fetch profile on mount
   useEffect(() => {
@@ -129,8 +171,8 @@ export default function Dashboard() {
       const token = getToken();
       if (!token) return;
 
-      await cancelLesson(lessonId, token);
-      alert("Lesson cancelled successfully!");
+      const result = await cancelLesson(lessonId, token);
+      alert(result.message || "Lesson cancelled successfully!");
       fetchMyLessons(); // Refresh list
     } catch (error: any) {
       alert(error.message || "Failed to cancel lesson");
@@ -146,6 +188,7 @@ export default function Dashboard() {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setProfileUpdateStatus(null);
 
     try {
       const response = await fetchWithAuth("/api/users/profile", {
@@ -158,9 +201,15 @@ export default function Dashboard() {
       const data = await response.json();
       setUser(data.user);
       setEditMode(false);
-      alert("Profile updated successfully!");
+      setProfileUpdateStatus({
+        type: "success",
+        message: "Profile updated successfully!",
+      });
     } catch (err) {
-      alert("Failed to update profile");
+      setProfileUpdateStatus({
+        type: "error",
+        message: "Failed to update profile",
+      });
     } finally {
       setSaving(false);
     }
@@ -169,6 +218,7 @@ export default function Dashboard() {
   // Update English level
   const handleLevelUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLevelUpdateStatus(null);
 
     try {
       const response = await fetchWithAuth("/api/users/english-level", {
@@ -178,13 +228,19 @@ export default function Dashboard() {
 
       if (!response.ok) throw new Error("Failed to update level");
 
-      const data = await response.json();
+      await response.json();
       setUser((prev) =>
         prev ? { ...prev, english_level: englishLevel } : null,
       );
-      alert("English level updated!");
+      setLevelUpdateStatus({
+        type: "success",
+        message: "English level updated!",
+      });
     } catch (err) {
-      alert("Failed to update English level");
+      setLevelUpdateStatus({
+        type: "error",
+        message: "Failed to update English level",
+      });
     }
   };
 
@@ -204,16 +260,25 @@ export default function Dashboard() {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setPhotoUploadStatus(null);
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
       setError("Please select an image file");
+      setPhotoUploadStatus({
+        type: "error",
+        message: "Please select an image file",
+      });
       return;
     }
 
     // Validate file size (2MB max)
     if (file.size > 2 * 1024 * 1024) {
       setError("File size must be less than 2MB");
+      setPhotoUploadStatus({
+        type: "error",
+        message: "File size must be less than 2MB",
+      });
       return;
     }
 
@@ -242,13 +307,24 @@ export default function Dashboard() {
           prev ? { ...prev, profile_photo: data.filename } : null,
         );
         setError("");
-        alert("Photo uploaded successfully!");
+        setPhotoUploadStatus({
+          type: "success",
+          message: "Photo uploaded successfully!",
+        });
       } else {
         setError(data.error || "Failed to upload photo");
+        setPhotoUploadStatus({
+          type: "error",
+          message: data.error || "Failed to upload photo",
+        });
       }
     } catch (err) {
       console.error("Photo upload error:", err);
       setError("Failed to upload photo");
+      setPhotoUploadStatus({
+        type: "error",
+        message: "Failed to upload photo",
+      });
     } finally {
       setUploading(false);
     }
@@ -362,6 +438,16 @@ export default function Dashboard() {
                     disabled={uploading}
                   />
                 </label>
+                {photoUploadStatus && (
+                  <div
+                    className={`mt-3 w-full rounded-lg border px-3 py-2 text-sm font-medium ${
+                      photoUploadStatus.type === "success"
+                        ? "border-green-200 bg-green-50 text-green-800"
+                        : "border-red-200 bg-red-50 text-red-700"
+                    }`}>
+                    {photoUploadStatus.message}
+                  </div>
+                )}
               </div>
 
               {/* View/Edit Profile */}
@@ -878,6 +964,17 @@ export default function Dashboard() {
                   />
                 </form>
               )}
+
+              {profileUpdateStatus && (
+                <div
+                  className={`mt-4 rounded-lg border px-4 py-3 text-sm font-medium ${
+                    profileUpdateStatus.type === "success"
+                      ? "border-green-200 bg-green-50 text-green-800"
+                      : "border-red-200 bg-red-50 text-red-700"
+                  }`}>
+                  {profileUpdateStatus.message}
+                </div>
+              )}
             </div>
           </div>
 
@@ -904,6 +1001,16 @@ export default function Dashboard() {
                   Update Level
                 </button>
               </form>
+              {levelUpdateStatus && (
+                <div
+                  className={`mt-4 rounded-lg border px-4 py-3 text-sm font-medium ${
+                    levelUpdateStatus.type === "success"
+                      ? "border-green-200 bg-green-50 text-green-800"
+                      : "border-red-200 bg-red-50 text-red-700"
+                  }`}>
+                  {levelUpdateStatus.message}
+                </div>
+              )}
             </div>
 
             {/* Quick Actions */}

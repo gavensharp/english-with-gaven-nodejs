@@ -31,10 +31,24 @@ export default function StudentCalendar({
     duration: 30, // 30 or 60 minutes
     startTime: "",
   });
+  const [bookingStatus, setBookingStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchCalendarData();
   }, []);
+
+  useEffect(() => {
+    if (!bookingStatus) return;
+
+    const timeout = setTimeout(() => {
+      setBookingStatus(null);
+    }, 4000);
+
+    return () => clearTimeout(timeout);
+  }, [bookingStatus]);
 
   const fetchCalendarData = async () => {
     try {
@@ -174,6 +188,7 @@ export default function StudentCalendar({
     }
 
     setSelectedSlot(slotData);
+    setBookingStatus(null);
 
     // Set default start time to slot start
     const slotStart = new Date(slotData.startTime);
@@ -276,9 +291,11 @@ export default function StudentCalendar({
         token,
       );
 
-      alert(
-        "Lesson booked successfully! Check your dashboard to view your booking.",
-      );
+      setBookingStatus({
+        type: "success",
+        message:
+          "Lesson booked successfully! Check your dashboard to view your booking.",
+      });
       setShowBookingModal(false);
       fetchCalendarData(); // Refresh calendar
     } catch (error: any) {
@@ -305,6 +322,17 @@ export default function StudentCalendar({
           minutes). Availability based on Jakarta time zone.
         </p>
       </div>
+
+      {bookingStatus && (
+        <div
+          className={`mb-4 rounded-lg border px-4 py-3 text-sm font-medium ${
+            bookingStatus.type === "success"
+              ? "border-green-200 bg-green-50 text-green-800"
+              : "border-red-200 bg-red-50 text-red-700"
+          }`}>
+          {bookingStatus.message}
+        </div>
+      )}
 
       <div className="mb-4 flex flex-wrap gap-4 text-sm rounded-lg bg-gray-50 px-4 py-3 border border-gray-200">
         <div className="flex items-center gap-2">
