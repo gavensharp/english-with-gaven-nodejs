@@ -66,11 +66,7 @@ Recommended Palette (8 Colors):
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
-    transition:
-      background-color 200ms ease,
-      color 200ms ease;
+    @apply bg-background text-foreground transition-colors duration-200;
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
@@ -83,83 +79,39 @@ Recommended Palette (8 Colors):
   h4,
   h5,
   h6 {
-    color: #114f11;
-    font-weight: 700;
+    @apply text-primary-dark font-bold;
   }
 }
 
 @layer components {
   /* Card styling */
   .card {
-    background-color: #ffffff;
-    border: 2px solid #d4d4d4;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    transition: all 200ms ease;
-  }
-
-  .card:hover {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    @apply bg-white border-2 border-neutral rounded-lg shadow-sm transition-all hover:shadow-md;
   }
 
   /* Button base styles */
   .btn {
-    padding: 0.5rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 200ms ease;
+    @apply px-6 py-2 rounded-lg font-semibold transition-all duration-200;
   }
 
   .btn-primary {
-    background-color: #88e788;
-    color: #114f11;
-    border: 2px solid #88e788;
-  }
-
-  .btn-primary:hover {
-    background-color: #a3f0a3;
+    @apply bg-primary text-primary-dark hover:bg-primary-light border-2 border-primary;
   }
 
   .btn-secondary {
-    background-color: #ffffc5;
-    color: #114f11;
-    border: 2px solid #ffffc5;
-  }
-
-  .btn-secondary:hover {
-    background-color: #ffd700;
+    @apply bg-secondary text-primary-dark hover:bg-secondary-dark border-2 border-secondary;
   }
 
   .btn-outline {
-    border: 2px solid #88e788;
-    color: #114f11;
-  }
-
-  .btn-outline:hover {
-    background-color: #88e788;
-    color: #114f11;
+    @apply border-2 border-primary text-primary-dark hover:bg-primary hover:text-primary-dark;
   }
 
   .btn-outline-primary {
-    border: 2px solid #88e788;
-    color: #114f11;
-    background-color: #ffffff;
-  }
-
-  .btn-outline-primary:hover {
-    background-color: #88e788;
-    color: #114f11;
+    @apply border-2 border-primary text-primary-dark bg-white hover:bg-primary hover:text-primary-dark;
   }
 
   .btn-outline-secondary {
-    border: 2px solid #ffb84d;
-    color: #114f11;
-    background-color: #ffffff;
-  }
-
-  .btn-outline-secondary:hover {
-    background-color: #ffb84d;
-    color: #ffffff;
+    @apply border-2 border-accent-orange text-primary-dark bg-white hover:bg-accent-orange hover:text-white;
   }
 
   /* SaveCancelButtons component uses:
@@ -168,15 +120,7 @@ Recommended Palette (8 Colors):
   */
 
   .input-field {
-    width: 100%;
-    border: 1px solid #d4d4d4;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .input-field:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #88e788;
+    @apply w-full border border-neutral rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
   }
 }
 
@@ -213,9 +157,7 @@ Recommended Palette (8 Colors):
 }
 
 .fc .fc-button {
-  background-color: #7b9fd3;
-  border-color: #7b9fd3;
-  color: #ffffff;
+  @apply bg-accent-blue-dark border-accent-blue-dark text-white;
 }
 
 .fc .fc-button:hover {
@@ -234,11 +176,11 @@ Recommended Palette (8 Colors):
 
 .fc-theme-standard td,
 .fc-theme-standard th {
-  border-color: #e5e7eb;
+  @apply border-gray-200;
 }
 
 .fc-theme-standard .fc-scrollgrid {
-  border-color: #e5e7eb;
+  @apply border-gray-200;
 }
 
 .fc .fc-col-header-cell {
