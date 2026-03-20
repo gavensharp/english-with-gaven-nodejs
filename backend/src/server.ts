@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import path from "path";
+import fs from "fs";
+import next from "next";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import lessonRoutes from "./routes/lessons";
@@ -9,6 +11,16 @@ import availabilityRoutes from "./routes/availability";
 import adminRoutes from "./routes/admin";
 import agoraRoutes from "./routes/agora";
 import { testDatabaseConnection } from "./utils/db";
+
+const API_PREFIXES = [
+  "/api/auth",
+  "/api/users",
+  "/api/lessons",
+  "/api/availability",
+  "/api/admin",
+  "/api/agora",
+  "/api/health",
+];
 
 export function createApp() {
   const app = express();
@@ -41,13 +53,65 @@ export function createApp() {
     res.json({ status: "OK", timestamp: new Date().toISOString() });
   });
 
-  // Error handling middleware
+  return app;
+}
+
+function registerErrorHandler(app: express.Express) {
   app.use((err: any, req: any, res: any, next: any) => {
     console.error("Error:", err);
     res.status(500).json({ error: "Internal server error" });
   });
+}
 
-  return app;
+function resolveNextAppDir() {
+  const envDir = process.env.NEXT_APP_DIR;
+  const candidates = [
+    envDir ? path.resolve(envDir) : "",
+    path.resolve(process.cwd(), "../frontend"),
+    path.resolve(__dirname, "../../frontend"),
+    path.resolve(__dirname, "../../../frontend"),
+  ].filter(Boolean);
+
+  const validDir = candidates.find((dir) => {
+    return (
+      fs.existsSync(path.join(dir, "app")) ||
+      fs.existsSync(path.join(dir, "src/app")) ||
+      fs.existsSync(path.join(dir, "pages"))
+    );
+  });
+
+  if (!validDir) {
+    throw new Error(
+      "Unable to locate frontend Next.js directory. Set NEXT_APP_DIR to your frontend path.",
+    );
+  }
+
+  return validDir;
+}
+
+async function mountNextHandler(app: express.Express) {
+  const isDev = process.env.NODE_ENV !== "production";
+  const nextAppDir = resolveNextAppDir();
+  const nextApp = next({ dev: isDev, dir: nextAppDir });
+
+  await nextApp.prepare();
+
+  const nextRequestHandler = nextApp.getRequestHandler();
+
+  app.use((req, res, nextMiddleware) => {
+    const isExpressApiRoute = API_PREFIXES.some(
+      (prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`),
+    );
+
+    if (isExpressApiRoute || req.path === "/uploads" || req.path.startsWith("/uploads/")) {
+      nextMiddleware();
+      return;
+    }
+
+    void nextRequestHandler(req, res).catch((err) => {
+      nextMiddleware(err);
+    });
+  });
 }
 
 // Start server with database connection test
@@ -62,6 +126,9 @@ export async function startServer() {
     console.error("⚠️  Server starting without database connection");
     console.error("⚠️  Please check your DATABASE_URL in .env file");
   }
+
+  await mountNextHandler(app);
+  registerErrorHandler(app);
 
   const server = app.listen(PORT, "127.0.0.1", () => {
     console.log("\n🚀 ================================");
