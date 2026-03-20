@@ -10,42 +10,51 @@ import adminRoutes from "./routes/admin";
 import agoraRoutes from "./routes/agora";
 import { testDatabaseConnection } from "./utils/db";
 
-const app = express();
-const PORT = parseInt(process.env.PORT || "3001", 10);
+export function createApp() {
+  const app = express();
 
-// Middleware
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    credentials: true,
-  }),
-);
-app.use(express.json());
+  // Middleware
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL || "http://localhost:3000",
+      credentials: true,
+    }),
+  );
+  app.use(express.json());
 
-// Serve static files (uploaded photos)
-app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
+  // Serve static files (uploaded photos)
+  app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "../public/uploads")),
+  );
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/lessons", lessonRoutes);
-app.use("/api/availability", availabilityRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/agora", agoraRoutes);
+  // Routes
+  app.use("/api/auth", authRoutes);
+  app.use("/api/users", userRoutes);
+  app.use("/api/lessons", lessonRoutes);
+  app.use("/api/availability", availabilityRoutes);
+  app.use("/api/admin", adminRoutes);
+  app.use("/api/agora", agoraRoutes);
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
-});
+  // Health check
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "OK", timestamp: new Date().toISOString() });
+  });
 
-// Error handling middleware
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error("Error:", err);
-  res.status(500).json({ error: "Internal server error" });
-});
+  // Error handling middleware
+  app.use((err: any, req: any, res: any, next: any) => {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  });
+
+  return app;
+}
 
 // Start server with database connection test
-async function startServer() {
+export async function startServer() {
+  const app = createApp();
+  const PORT = parseInt(process.env.PORT || "3001", 10);
+
   // Test database connection first
   const dbConnected = await testDatabaseConnection();
 
@@ -87,4 +96,6 @@ async function startServer() {
   });
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
