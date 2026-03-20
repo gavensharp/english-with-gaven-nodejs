@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       channelName,
       parseInt(uid),
       RtcRole.PUBLISHER,
+      expirationTimeInSeconds,
       privilegeExpiredTs,
     );
 

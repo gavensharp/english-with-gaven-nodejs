@@ -103,7 +103,11 @@ async function mountNextHandler(app: express.Express) {
       (prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`),
     );
 
-    if (isExpressApiRoute || req.path === "/uploads" || req.path.startsWith("/uploads/")) {
+    if (
+      isExpressApiRoute ||
+      req.path === "/uploads" ||
+      req.path.startsWith("/uploads/")
+    ) {
       nextMiddleware();
       return;
     }
