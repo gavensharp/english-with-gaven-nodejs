@@ -67,6 +67,9 @@ function resolveNextAppDir() {
   const envDir = process.env.NEXT_APP_DIR;
   const candidates = [
     envDir ? path.resolve(envDir) : "",
+    // In compiled runtime (__dirname = backend/dist/src), this resolves to project/frontend.
+    path.resolve(__dirname, "../../../../frontend"),
+    path.resolve(process.cwd(), "frontend"),
     path.resolve(process.cwd(), "../frontend"),
     path.resolve(__dirname, "../../frontend"),
     path.resolve(__dirname, "../../../frontend"),
@@ -92,6 +95,8 @@ function resolveNextAppDir() {
 async function mountNextHandler(app: express.Express) {
   const isDev = process.env.NODE_ENV !== "production";
   const nextAppDir = resolveNextAppDir();
+
+  console.log(`📁 Next app directory: ${nextAppDir}`);
 
   // Next/Tailwind should resolve project config from frontend directory.
   process.chdir(nextAppDir);
