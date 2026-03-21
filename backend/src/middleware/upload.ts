@@ -1,6 +1,9 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { randomUUID } from "crypto";
+
+const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp"]);
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, "../../public/uploads/profile_photo");
@@ -14,8 +17,16 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    // Generate unique filename: userId_timestamp.ext
-    const uniqueName = `${Date.now()}_${file.originalname}`;
+    const safeOriginalName = path
+      .basename(file.originalname)
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+    const extension = path.extname(safeOriginalName).toLowerCase();
+
+    if (!ALLOWED_EXTENSIONS.has(extension)) {
+      return cb(new Error("Unsupported file type"), "");
+    }
+
+    const uniqueName = `${Date.now()}_${randomUUID()}${extension}`;
     cb(null, uniqueName);
   },
 });

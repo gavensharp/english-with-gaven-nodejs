@@ -121,7 +121,7 @@ export async function updateProfile(req: Request, res: Response) {
       return res.status(401).json({ error: "Invalid token" });
     }
 
-    const { name, dob, country, gender, timezone} = req.body;
+    const { name, dob, country, gender, timezone } = req.body;
 
     // Build update object with only provided fields
     const updateData: any = {};
@@ -163,12 +163,9 @@ export async function updateProfile(req: Request, res: Response) {
 // Upload profile photo
 export async function uploadPhoto(req: Request, res: Response) {
   try {
-    console.log("Upload photo - Headers:", req.headers.authorization);
-    
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      console.log("Upload photo - No auth header");
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -176,17 +173,12 @@ export async function uploadPhoto(req: Request, res: Response) {
     const decoded = verifyToken(token);
 
     if (!decoded) {
-      console.log("Upload photo - Invalid token");
       return res.status(401).json({ error: "Invalid token" });
     }
-
-    console.log("Upload photo - User ID:", decoded.userId);
-    console.log("Upload photo - File received:", req.file);
 
     const file = req.file;
 
     if (!file) {
-      console.log("Upload photo - No file in request");
       return res.status(400).json({ error: "No file uploaded" });
     }
 
@@ -195,8 +187,6 @@ export async function uploadPhoto(req: Request, res: Response) {
       where: { id: decoded.userId },
       select: { profile_photo: true },
     });
-
-    console.log("Upload photo - Current user photo:", user?.profile_photo);
 
     // Delete old photo if exists
     if (user?.profile_photo) {
@@ -212,14 +202,11 @@ export async function uploadPhoto(req: Request, res: Response) {
 
     // Save new filename to database
     const filename = file.filename;
-    console.log("Upload photo - New filename:", filename);
-    
+
     await prisma.user.update({
       where: { id: decoded.userId },
       data: { profile_photo: filename },
     });
-
-    console.log("Upload photo - Success!");
 
     res.json({
       message: "Photo uploaded successfully",

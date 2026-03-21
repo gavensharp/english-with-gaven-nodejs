@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { hashPassword, verifyPassword, generateToken } from "../utils/auth";
 import { prisma } from "../utils/db";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function signup(req: Request, res: Response) {
   try {
     const { name, email, password } = req.body;
@@ -9,6 +11,30 @@ export async function signup(req: Request, res: Response) {
     // Validation
     if (!name || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (
+      typeof name !== "string" ||
+      name.trim().length < 2 ||
+      name.length > 80
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Name must be between 2 and 80 characters" });
+    }
+
+    if (typeof email !== "string" || !EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    if (
+      typeof password !== "string" ||
+      password.length < 8 ||
+      password.length > 128
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Password must be between 8 and 128 characters" });
     }
 
     // Check if user exists
@@ -50,6 +76,18 @@ export async function signup(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
+
+    if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
 
     // Find user
     const user = await prisma.user.findUnique({ where: { email } });

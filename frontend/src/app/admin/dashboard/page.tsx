@@ -31,14 +31,11 @@ export default function AdminPage() {
 
       try {
         // Test admin access by calling an admin endpoint
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/lessons/all`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await fetch("/api/lessons/all", {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         if (response.ok) {
           setIsAdmin(true);

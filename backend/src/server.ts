@@ -92,6 +92,10 @@ function resolveNextAppDir() {
 async function mountNextHandler(app: express.Express) {
   const isDev = process.env.NODE_ENV !== "production";
   const nextAppDir = resolveNextAppDir();
+
+  // Next/Tailwind should resolve project config from frontend directory.
+  process.chdir(nextAppDir);
+
   const nextApp = next({ dev: isDev, dir: nextAppDir });
 
   await nextApp.prepare();
@@ -122,6 +126,9 @@ async function mountNextHandler(app: express.Express) {
 export async function startServer() {
   const app = createApp();
   const PORT = parseInt(process.env.PORT || "3001", 10);
+  const shouldMountNext =
+    process.env.MOUNT_NEXT_IN_BACKEND === "true" ||
+    process.env.NODE_ENV === "production";
 
   // Test database connection first
   const dbConnected = await testDatabaseConnection();
@@ -131,7 +138,13 @@ export async function startServer() {
     console.error("⚠️  Please check your DATABASE_URL in .env file");
   }
 
-  await mountNextHandler(app);
+  if (shouldMountNext) {
+    await mountNextHandler(app);
+  } else {
+    console.log(
+      "ℹ️  Skipping Next.js mount in backend dev mode (set MOUNT_NEXT_IN_BACKEND=true to enable)",
+    );
+  }
   registerErrorHandler(app);
 
   const server = app.listen(PORT, "127.0.0.1", () => {

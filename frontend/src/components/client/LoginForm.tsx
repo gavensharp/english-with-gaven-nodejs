@@ -15,6 +15,20 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const parseJsonSafely = async (response: Response) => {
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      return response.json();
+    }
+
+    const text = await response.text();
+    return {
+      error: response.ok
+        ? "Server returned an unexpected response format"
+        : text || "Request failed",
+    };
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -41,24 +55,32 @@ export default function LoginForm() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafely(response);
 
       if (response.ok) {
+        if (!data?.token) {
+          setError("Login response was invalid. Please try again.");
+          return;
+        }
+
         setToken(data.token);
         await login(data.token);
 
         // Fetch user profile to check role
-        const userResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"}/users/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-            },
+        const userResponse = await fetch("/api/users/profile", {
+          headers: {
+            Authorization: `Bearer ${data.token}`,
           },
-        );
+        });
 
         if (userResponse.ok) {
-          const userData = await userResponse.json();
+          const userData = await parseJsonSafely(userResponse);
+
+          if (!userData?.user) {
+            router.push("/student/dashboard");
+            return;
+          }
+
           const redirectUrl =
             userData.user.role === "admin"
               ? "/admin/dashboard"
@@ -70,7 +92,6 @@ export default function LoginForm() {
       } else {
         setError(data.error || "Invalid credentials");
       }
-
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {

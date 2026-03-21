@@ -1,0 +1,1 @@
+{"version":3,"file":"authRateLimit.d.ts","sourceRoot":"","sources":["../../src/middleware/authRateLimit.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAiB1D,wBAAgB,aAAa,CAAC,GAAG,EAAE,OAAO,EAAE,GAAG,EAAE,QAAQ,EAAE,IAAI,EAAE,YAAY,6CAqB5E"}
