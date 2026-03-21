@@ -12,14 +12,22 @@ async function signup(req, res) {
         if (!name || !email || !password) {
             return res.status(400).json({ error: "All fields are required" });
         }
-        if (typeof name !== "string" || name.trim().length < 2 || name.length > 80) {
-            return res.status(400).json({ error: "Name must be between 2 and 80 characters" });
+        if (typeof name !== "string" ||
+            name.trim().length < 2 ||
+            name.length > 80) {
+            return res
+                .status(400)
+                .json({ error: "Name must be between 2 and 80 characters" });
         }
         if (typeof email !== "string" || !EMAIL_REGEX.test(email)) {
             return res.status(400).json({ error: "Invalid email format" });
         }
-        if (typeof password !== "string" || password.length < 8 || password.length > 128) {
-            return res.status(400).json({ error: "Password must be between 8 and 128 characters" });
+        if (typeof password !== "string" ||
+            password.length < 8 ||
+            password.length > 128) {
+            return res
+                .status(400)
+                .json({ error: "Password must be between 8 and 128 characters" });
         }
         // Check if user exists
         const existingUser = await db_1.prisma.user.findUnique({ where: { email } });

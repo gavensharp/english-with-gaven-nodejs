@@ -126,6 +126,7 @@ async function mountNextHandler(app: express.Express) {
 export async function startServer() {
   const app = createApp();
   const PORT = parseInt(process.env.PORT || "3001", 10);
+  const HOST = process.env.HOST || "0.0.0.0";
   const shouldMountNext =
     process.env.MOUNT_NEXT_IN_BACKEND === "true" ||
     process.env.NODE_ENV === "production";
@@ -147,9 +148,9 @@ export async function startServer() {
   }
   registerErrorHandler(app);
 
-  const server = app.listen(PORT, "127.0.0.1", () => {
+  const server = app.listen(PORT, HOST, () => {
     console.log("\n🚀 ================================");
-    console.log(`🚀 Express Backend running on http://127.0.0.1:${PORT}`);
+    console.log(`🚀 Express Backend running on http://${HOST}:${PORT}`);
     console.log(
       `🔐 CORS enabled for: ${process.env.FRONTEND_URL || "http://localhost:3000"}`,
     );

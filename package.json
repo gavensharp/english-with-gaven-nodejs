@@ -1,4 +1,19 @@
 {
+  "name": "english-with-gaven-js",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build -w frontend && npm run build -w backend",
+    "start": "npm run start -w backend",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "dependencies": {
     "agora-chat": "^1.3.1"
   }

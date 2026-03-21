@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const authController_1 = require("../controllers/authController");
 const authRateLimit_1 = require("../middleware/authRateLimit");
 const router = express_1.default.Router();
-router.post('/signup', authRateLimit_1.authRateLimit, authController_1.signup);
-router.post('/login', authRateLimit_1.authRateLimit, authController_1.login);
+router.post("/signup", authRateLimit_1.authRateLimit, authController_1.signup);
+router.post("/login", authRateLimit_1.authRateLimit, authController_1.login);
 exports.default = router;
 //# sourceMappingURL=auth.js.map
