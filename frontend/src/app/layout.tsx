@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "English with Gaven - Premium Online English Tutoring",
   description:
     "Premium Online English Tutoring, Customized for Your Success. Expert lessons for speaking, travel, work, study, grammar, and kids.",
+  metadataBase: new URL("https://englishwithgaven.com"),
 };
 
 export default function RootLayout({

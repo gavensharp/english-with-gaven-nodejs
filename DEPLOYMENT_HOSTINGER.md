@@ -1,6 +1,6 @@
-# Hostinger GitHub Deployment (Single Node App)
+# Hostinger GitHub Deployment (Single Node Entry)
 
-This repository is configured to deploy as a single Node.js app where Express serves API routes and mounts Next.js for frontend pages in production.
+This repository is configured to deploy as a single Node.js app where the root entry point starts the backend, and backend mounts Next.js for web routes in production.
 
 ## Hostinger Build and Start Commands
 
@@ -29,10 +29,19 @@ Optional:
 
 ## How It Works
 
-1. Root `npm run build` builds frontend then backend.
-2. Root `npm run start` starts backend server.
-3. Backend serves `/api/*` routes and `/uploads/*` directly.
-4. Backend forwards all non-API routes to Next.js request handler.
+1. Root install command installs one dependency tree for the app.
+2. Root `npm run build` builds frontend then backend.
+3. Root `npm run start` runs root `index.js` entrypoint.
+4. Root entrypoint starts backend server process.
+5. Backend serves `/api/*` routes and `/uploads/*` directly.
+6. Backend forwards all non-API routes to Next.js request handler.
+
+## Prisma Deployment Step
+
+After first successful deploy with a new database, run:
+
+- `npm run prisma:migrate:deploy`
+- `npm run prisma:generate`
 
 ## Health Check
 

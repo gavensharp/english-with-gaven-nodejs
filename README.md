@@ -11,10 +11,11 @@ Full-stack English tutoring platform built with Next.js and Express.
 
 In production, this project runs as a single Node.js app process: Express serves API routes and mounts Next.js for web routes.
 
-## Monorepo Structure
+## Project Structure
 
 - `frontend/` - Next.js app
 - `backend/` - Express API + Prisma
+- `index.js` - root runtime entrypoint for production startup
 - `docs/` - Product and integration notes
 
 ## Requirements
