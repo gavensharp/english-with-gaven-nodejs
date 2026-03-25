@@ -9,3 +9,6 @@ node_modules
 .env.local
 .env*.local
 HOSTINGER_IMPORT.env
+
+# macOS Finder metadata
+.DS_Store
