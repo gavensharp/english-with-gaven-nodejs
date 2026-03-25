@@ -4,12 +4,12 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build:frontend": "cd frontend && ../node_modules/.bin/next build",
+    "build:frontend": "npm --prefix frontend ci --include=dev && npm --prefix frontend run build",
     "build:backend": "tsc -p backend/tsconfig.json",
     "build": "npm run build:frontend && npm run build:backend",
     "start": "node index.js",
     "dev:backend": "nodemon --exec ts-node backend/src/server.ts",
-    "dev:frontend": "cd frontend && ../node_modules/.bin/next dev",
+    "dev:frontend": "npm --prefix frontend run dev",
     "prisma:generate": "prisma generate --schema=backend/prisma/schema.prisma",
     "prisma:migrate:deploy": "prisma migrate deploy --schema=backend/prisma/schema.prisma",
     "postinstall": "npm run prisma:generate"
