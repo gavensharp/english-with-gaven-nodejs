@@ -7,10 +7,13 @@ exports.createApp = createApp;
 exports.startServer = startServer;
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const compression_1 = __importDefault(require("compression"));
+const helmet_1 = __importDefault(require("helmet"));
 require("dotenv/config");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const next_1 = __importDefault(require("next"));
+const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const user_1 = __importDefault(require("./routes/user"));
 const lessons_1 = __importDefault(require("./routes/lessons"));
@@ -29,14 +32,41 @@ const API_PREFIXES = [
 ];
 function createApp() {
     const app = (0, express_1.default)();
+    const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean);
+    app.disable("x-powered-by");
+    app.set("trust proxy", 1);
     // Middleware
+    app.use((0, compression_1.default)());
+    app.use((0, helmet_1.default)({
+        contentSecurityPolicy: false,
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+    }));
     app.use((0, cors_1.default)({
-        origin: process.env.FRONTEND_URL || "http://localhost:3000",
+        origin: (origin, callback) => {
+            if (!origin || frontendOrigins.includes(origin)) {
+                callback(null, true);
+                return;
+            }
+            callback(new Error("Not allowed by CORS"));
+        },
         credentials: true,
     }));
-    app.use(express_1.default.json());
+    app.use("/api", (0, express_rate_limit_1.default)({
+        windowMs: 15 * 60 * 1000,
+        max: 300,
+        standardHeaders: true,
+        legacyHeaders: false,
+    }));
+    app.use(express_1.default.json({ limit: "1mb" }));
     // Serve static files (uploaded photos)
-    app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "../public/uploads")));
+    app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "../public/uploads"), {
+        maxAge: "7d",
+        etag: true,
+        immutable: false,
+    }));
     // Routes
     app.use("/api/auth", auth_1.default);
     app.use("/api/users", user_1.default);
@@ -60,6 +90,9 @@ function resolveNextAppDir() {
     const envDir = process.env.NEXT_APP_DIR;
     const candidates = [
         envDir ? path_1.default.resolve(envDir) : "",
+        // In compiled runtime (__dirname = backend/dist/src), this resolves to project/frontend.
+        path_1.default.resolve(__dirname, "../../../../frontend"),
+        path_1.default.resolve(process.cwd(), "frontend"),
         path_1.default.resolve(process.cwd(), "../frontend"),
         path_1.default.resolve(__dirname, "../../frontend"),
         path_1.default.resolve(__dirname, "../../../frontend"),
@@ -77,6 +110,7 @@ function resolveNextAppDir() {
 async function mountNextHandler(app) {
     const isDev = process.env.NODE_ENV !== "production";
     const nextAppDir = resolveNextAppDir();
+    console.log(`📁 Next app directory: ${nextAppDir}`);
     // Next/Tailwind should resolve project config from frontend directory.
     process.chdir(nextAppDir);
     const nextApp = (0, next_1.default)({ dev: isDev, dir: nextAppDir });
@@ -100,6 +134,10 @@ async function startServer() {
     const app = createApp();
     const PORT = parseInt(process.env.PORT || "3001", 10);
     const HOST = process.env.HOST || "0.0.0.0";
+    const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean);
     const shouldMountNext = process.env.MOUNT_NEXT_IN_BACKEND === "true" ||
         process.env.NODE_ENV === "production";
     // Test database connection first
@@ -118,7 +156,7 @@ async function startServer() {
     const server = app.listen(PORT, HOST, () => {
         console.log("\n🚀 ================================");
         console.log(`🚀 Express Backend running on http://${HOST}:${PORT}`);
-        console.log(`🔐 CORS enabled for: ${process.env.FRONTEND_URL || "http://localhost:3000"}`);
+        console.log(`🔐 CORS enabled for: ${frontendOrigins.join(", ")}`);
         console.log("🚀 ================================\n");
     });
     // Handle errors
