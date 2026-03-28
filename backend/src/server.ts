@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import compression from "compression";
 import helmet from "helmet";
-import "dotenv/config";
 import path from "path";
 import fs from "fs";
 import next from "next";
