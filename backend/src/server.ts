@@ -180,7 +180,12 @@ export async function startServer() {
 
   if (!dbConnected) {
     console.error("⚠️  Server starting without database connection");
-    console.error("⚠️  Please check your DATABASE_URL in .env file");
+    console.error(
+      "⚠️  Please check the runtime DATABASE_URL environment variable",
+    );
+    console.error(
+      "⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel",
+    );
   }
 
   if (shouldMountNext) {
