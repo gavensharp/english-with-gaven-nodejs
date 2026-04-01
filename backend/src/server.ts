@@ -202,16 +202,27 @@ export async function startServer() {
 
     // Lazy import keeps lean smoke boot free from Prisma initialization.
     const { testDatabaseConnection } = await import("./utils/db");
-    const dbConnected = await testDatabaseConnection();
+    const dbCheck = await testDatabaseConnection();
 
-    if (!dbConnected) {
+    if (!dbCheck.ok) {
       console.error("⚠️  Server starting without database connection");
-      console.error(
-        "⚠️  Please check the runtime DATABASE_URL environment variable",
-      );
-      console.error(
-        "⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel",
-      );
+      if (dbCheck.stage === "query") {
+        console.error(
+          "⚠️  Database credentials look reachable, but schema appears incomplete.",
+        );
+        console.error(
+          "⚠️  Run prisma migrations, then redeploy and re-test DB-backed routes.",
+        );
+      } else {
+        console.error(
+          "⚠️  Please check runtime DATABASE_URL and database user host permissions.",
+        );
+        console.error(
+          "⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel.",
+        );
+      }
+      console.error(`⚠️  DB check code: ${dbCheck.code || "UNKNOWN"}`);
+      console.error(`⚠️  DB check message: ${dbCheck.message}`);
     }
   }
 
