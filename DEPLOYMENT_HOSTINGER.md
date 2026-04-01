@@ -10,6 +10,8 @@ Use these values in Hostinger's GitHub deployment settings:
 - Build command: `npm run build`
 - Start command: `npm run start`
 
+If your Hostinger panel only supports `npm` (no separate build/start commands), this branch is configured to build automatically during install via root `postinstall`.
+
 If your Hostinger panel does not provide a Start command field, set startup file to `index.js` in the app root. This project already uses `index.js` as the single Node.js entrypoint.
 
 ## Required Environment Variables
@@ -36,11 +38,10 @@ Lean smoke-test optional variable:
 ## How It Works
 
 1. Root install command installs one dependency tree for the app.
-2. Root `npm run build` builds frontend then backend.
-3. Root `npm run start` runs root `index.js` entrypoint.
-4. Root entrypoint starts backend server process.
-5. Backend serves `/api/*` routes and `/uploads/*` directly.
-6. Backend forwards all non-API routes to Next.js request handler.
+2. Root `postinstall` runs Prisma generate and build (frontend then backend).
+3. Root `index.js` entrypoint starts backend server process.
+4. Backend serves `/api/*` routes and `/uploads/*` directly.
+5. Backend forwards all non-API routes to Next.js request handler.
 
 ## Prisma Deployment Step
 
