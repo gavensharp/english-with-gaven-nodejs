@@ -9,12 +9,26 @@ import rateLimit from "express-rate-limit";
 
 const API_PREFIXES = ["/api", "/api/health"];
 
+type RuntimeDbStatus = {
+  state:
+    | "not-checked"
+    | "skipped"
+    | "connected"
+    | "connect-failed"
+    | "schema-not-ready";
+  code?: string;
+  message?: string;
+};
+
 function isLeanHostingTestMode() {
   return process.env.LEAN_HOSTING_TEST === "true";
 }
 
 export function createApp() {
   const app = express();
+  app.locals.runtimeDbStatus = {
+    state: "not-checked",
+  } as RuntimeDbStatus;
   const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
     .split(",")
     .map((origin) => origin.trim())
@@ -66,9 +80,14 @@ export function createApp() {
 
   // Health check
   app.get("/api/health", (req, res) => {
+    const runtimeDbStatus =
+      (req.app.locals.runtimeDbStatus as RuntimeDbStatus) ||
+      ({ state: "not-checked" } as RuntimeDbStatus);
+
     res.json({
       status: "OK",
       mode: isLeanHostingTestMode() ? "lean-hosting-test" : "full",
+      db: runtimeDbStatus,
       timestamp: new Date().toISOString(),
     });
   });
@@ -187,6 +206,11 @@ export async function startServer() {
     process.env.NODE_ENV === "production";
 
   if (leanHostingTestMode) {
+    app.locals.runtimeDbStatus = {
+      state: "skipped",
+      message: "LEAN_HOSTING_TEST=true",
+    } as RuntimeDbStatus;
+
     console.log(
       "🧪 LEAN_HOSTING_TEST=true: skipping DB check and API route mount",
     );
@@ -203,6 +227,17 @@ export async function startServer() {
     // Lazy import keeps lean smoke boot free from Prisma initialization.
     const { testDatabaseConnection } = await import("./utils/db");
     const dbCheck = await testDatabaseConnection();
+
+    app.locals.runtimeDbStatus = dbCheck.ok
+      ? ({
+          state: "connected",
+          message: dbCheck.message,
+        } as RuntimeDbStatus)
+      : ({
+          state: dbCheck.stage === "query" ? "schema-not-ready" : "connect-failed",
+          code: dbCheck.code,
+          message: dbCheck.message,
+        } as RuntimeDbStatus);
 
     if (!dbCheck.ok) {
       console.error("⚠️  Server starting without database connection");
