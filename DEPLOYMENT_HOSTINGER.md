@@ -10,6 +10,8 @@ Use these values in Hostinger's GitHub deployment settings:
 - Build command: `npm run build`
 - Start command: `npm run start`
 
+If your Hostinger panel does not provide a Start command field, set startup file to `index.js` in the app root. This project already uses `index.js` as the single Node.js entrypoint.
+
 ## Required Environment Variables
 
 Set these in Hostinger environment settings:
@@ -26,6 +28,10 @@ Optional:
 - `FRONTEND_URL=https://your-domain.com`
 - `NEXT_PUBLIC_BACKEND_URL=https://your-domain.com`
 - `MOUNT_NEXT_IN_BACKEND=true` (not required when `NODE_ENV=production`)
+
+Lean smoke-test optional variable:
+
+- `LEAN_HOSTING_TEST=true` to boot Express without DB checks and without DB-backed API route mounting.
 
 ## How It Works
 
@@ -48,6 +54,10 @@ After first successful deploy with a new database, run:
 After deployment, verify:
 
 - `GET /api/health` returns JSON.
+
+When `LEAN_HOSTING_TEST=true`, also verify:
+
+- `GET /api/smoke` returns JSON.
 
 ## Notes
 

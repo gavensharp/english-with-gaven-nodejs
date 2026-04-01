@@ -6,23 +6,12 @@ import path from "path";
 import fs from "fs";
 import next from "next";
 import rateLimit from "express-rate-limit";
-import authRoutes from "./routes/auth";
-import userRoutes from "./routes/user";
-import lessonRoutes from "./routes/lessons";
-import availabilityRoutes from "./routes/availability";
-import adminRoutes from "./routes/admin";
-import agoraRoutes from "./routes/agora";
-import { testDatabaseConnection } from "./utils/db";
 
-const API_PREFIXES = [
-  "/api/auth",
-  "/api/users",
-  "/api/lessons",
-  "/api/availability",
-  "/api/admin",
-  "/api/agora",
-  "/api/health",
-];
+const API_PREFIXES = ["/api", "/api/health"];
+
+function isLeanHostingTestMode() {
+  return process.env.LEAN_HOSTING_TEST === "true";
+}
 
 export function createApp() {
   const app = express();
@@ -75,20 +64,41 @@ export function createApp() {
     }),
   );
 
-  // Routes
-  app.use("/api/auth", authRoutes);
-  app.use("/api/users", userRoutes);
-  app.use("/api/lessons", lessonRoutes);
-  app.use("/api/availability", availabilityRoutes);
-  app.use("/api/admin", adminRoutes);
-  app.use("/api/agora", agoraRoutes);
-
   // Health check
   app.get("/api/health", (req, res) => {
-    res.json({ status: "OK", timestamp: new Date().toISOString() });
+    res.json({
+      status: "OK",
+      mode: isLeanHostingTestMode() ? "lean-hosting-test" : "full",
+      timestamp: new Date().toISOString(),
+    });
   });
 
   return app;
+}
+
+async function mountApiRoutes(app: express.Express) {
+  const [
+    authModule,
+    userModule,
+    lessonModule,
+    availabilityModule,
+    adminModule,
+    agoraModule,
+  ] = await Promise.all([
+    import("./routes/auth"),
+    import("./routes/user"),
+    import("./routes/lessons"),
+    import("./routes/availability"),
+    import("./routes/admin"),
+    import("./routes/agora"),
+  ]);
+
+  app.use("/api/auth", authModule.default);
+  app.use("/api/users", userModule.default);
+  app.use("/api/lessons", lessonModule.default);
+  app.use("/api/availability", availabilityModule.default);
+  app.use("/api/admin", adminModule.default);
+  app.use("/api/agora", agoraModule.default);
 }
 
 function registerErrorHandler(app: express.Express) {
@@ -167,6 +177,7 @@ export async function startServer() {
   const app = createApp();
   const PORT = parseInt(process.env.PORT || "3001", 10);
   const HOST = process.env.HOST || "0.0.0.0";
+  const leanHostingTestMode = isLeanHostingTestMode();
   const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
     .split(",")
     .map((origin) => origin.trim())
@@ -175,17 +186,33 @@ export async function startServer() {
     process.env.MOUNT_NEXT_IN_BACKEND === "true" ||
     process.env.NODE_ENV === "production";
 
-  // Test database connection first
-  const dbConnected = await testDatabaseConnection();
+  if (leanHostingTestMode) {
+    console.log(
+      "🧪 LEAN_HOSTING_TEST=true: skipping DB check and API route mount",
+    );
+    app.get("/api/smoke", (req, res) => {
+      res.json({
+        status: "OK",
+        service: "express",
+        mode: "lean-hosting-test",
+      });
+    });
+  } else {
+    await mountApiRoutes(app);
 
-  if (!dbConnected) {
-    console.error("⚠️  Server starting without database connection");
-    console.error(
-      "⚠️  Please check the runtime DATABASE_URL environment variable",
-    );
-    console.error(
-      "⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel",
-    );
+    // Lazy import keeps lean smoke boot free from Prisma initialization.
+    const { testDatabaseConnection } = await import("./utils/db");
+    const dbConnected = await testDatabaseConnection();
+
+    if (!dbConnected) {
+      console.error("⚠️  Server starting without database connection");
+      console.error(
+        "⚠️  Please check the runtime DATABASE_URL environment variable",
+      );
+      console.error(
+        "⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel",
+      );
+    }
   }
 
   if (shouldMountNext) {

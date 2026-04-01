@@ -8,7 +8,16 @@ node_modules
 .env
 .env.local
 .env*.local
+backend/.env
+frontend/.env
 HOSTINGER_IMPORT.env
 
 # macOS Finder metadata
 .DS_Store
+
+# Hosting smoke-test branch local artifacts
+.env.hosting-test
+backend/.env.hosting-test
+frontend/.env.hosting-test
+hostinger-smoke/
+*.hostinger.log
