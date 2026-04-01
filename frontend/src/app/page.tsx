@@ -6,32 +6,21 @@ export default function Home() {
           English with Gaven
         </h1>
         <p className="mt-4 text-lg text-gray-700">
-          Lean Hostinger smoke build: Next.js homepage + Express API without a
-          required database connection.
+          We are currently performing scheduled maintenance to improve your
+          experience.
         </p>
-        <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 text-left shadow-sm">
-          <h2 className="text-xl font-semibold text-primary-dark">
-            Smoke test checklist
-          </h2>
-          <ul className="mt-3 list-disc space-y-2 pl-5 text-gray-700">
-            <li>This homepage returns HTTP 200.</li>
-            <li>
-              <a className="underline" href="/api/health">
-                /api/health
-              </a>{" "}
-              returns JSON with status OK.
-            </li>
-            <li>
-              <a className="underline" href="/api/smoke">
-                /api/smoke
-              </a>{" "}
-              returns lean-mode response when enabled.
-            </li>
-          </ul>
+        <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-primary-dark">Under Maintenance</h2>
+          <p className="mt-3 text-gray-700">
+            The website is online, and we are now connecting backend services
+            and database features.
+          </p>
+          <p className="mt-2 text-gray-700">
+            Please check back shortly. Thank you for your patience.
+          </p>
         </div>
         <p className="mt-8 text-sm text-gray-500">
-          If this deploy passes, reintroduce DATABASE_URL and DB-backed routes
-          in phase two.
+          Status: maintenance in progress.
         </p>
       </section>
     </main>
