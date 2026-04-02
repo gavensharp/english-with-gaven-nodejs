@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import AuthButton from "./client/AuthButton";
+// import AuthButton from "./client/AuthButton";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Navbar() {
@@ -50,11 +50,11 @@ export default function Navbar() {
               className="text-grey-700 hover:text-accent-orange transition">
               Contact
             </Link>
-            <Link
+            {/* <Link
               href="/calendar"
               className="text-grey-700 hover:text-accent-orange transition">
               Calendar
-            </Link>
+            </Link> */}
 
             {/* Admin Link - Only show for admin users */}
             {isAdmin && (
@@ -66,7 +66,7 @@ export default function Navbar() {
             )}
 
             {/* Auth Button (shows Login/Signup OR Avatar) */}
-            <AuthButton />
+            {/* <AuthButton /> */}
           </div>
 
           {/* Mobile Menu Button */}
@@ -122,11 +122,11 @@ export default function Navbar() {
                 className="text-grey-700 hover:text-accent-orange transition">
                 Contact
               </Link>
-              <Link
+              {/* <Link
                 href="/calendar"
                 className="text-grey-700 hover:text-accent-orange transition">
                 Calendar
-              </Link>
+              </Link> */}
 
               {/* Admin Link - Mobile */}
               {isAdmin && (
@@ -139,7 +139,7 @@ export default function Navbar() {
 
               {/* Auth Button for Mobile */}
               <div className="pt-4 border-t border-gray-200">
-                <AuthButton />
+                {/* <AuthButton /> */}
               </div>
             </div>
           </div>

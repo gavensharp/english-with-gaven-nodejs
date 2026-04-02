@@ -234,7 +234,8 @@ export async function startServer() {
           message: dbCheck.message,
         } as RuntimeDbStatus)
       : ({
-          state: dbCheck.stage === "query" ? "schema-not-ready" : "connect-failed",
+          state:
+            dbCheck.stage === "query" ? "schema-not-ready" : "connect-failed",
           code: dbCheck.code,
           message: dbCheck.message,
         } as RuntimeDbStatus);

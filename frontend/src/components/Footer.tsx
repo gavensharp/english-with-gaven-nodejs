@@ -22,7 +22,7 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-primary-dark mb-4">Account</h4>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <Link
                   href="/login"
                   className="text-gray-700 hover:text-accent-orange transition">
@@ -35,7 +35,7 @@ export default function Footer() {
                   className="text-gray-700 hover:text-accent-orange transition">
                   Sign Up
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/contact"

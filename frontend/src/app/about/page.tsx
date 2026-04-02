@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import CTAButton from "@/components/CTAButton";
+// import CTAButton from "@/components/CTAButton";
 import InfoButton from "@/components/InfoButton";
 
 export const metadata: Metadata = {
@@ -46,9 +46,9 @@ export default function About() {
                 Let me help you improve your English today!
               </p>
               {/* CTA Button */}
-              <div className="text-center mt-12">
+              {/* <div className="text-center mt-12">
                 <CTAButton />
-              </div>
+              </div> */}
             </div>
 
             {/* Hero Video */}
@@ -122,7 +122,7 @@ export default function About() {
           {/* LinkedIn Button */}
           <div className="text-center mt-8">
             <InfoButton
-              href="https://www.linkedin.com/in/gavenhendricks"
+              href="https://www.linkedin.com/in/gavenhendricks/"
               text="View LinkedIn Profile"
               target="_blank"
               rel="noopener noreferrer"
