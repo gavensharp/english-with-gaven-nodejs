@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ChatTokenBuilder } from "agora-token";
 
-/**
- * API Route: Generate Agora RTM Token for chat functionality
- * GET /api/agora/chat-token?userId=USER_ID
- */
 export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
@@ -21,7 +17,6 @@ export async function GET(request: NextRequest) {
 		const appCertificate = process.env.AGORA_APP_CERTIFICATE;
 
 		if (!appId || !appCertificate) {
-			console.error("Missing Agora credentials in environment variables");
 			return NextResponse.json(
 				{ error: "Server configuration error" },
 				{ status: 500 },
@@ -29,8 +24,8 @@ export async function GET(request: NextRequest) {
 		}
 
 		const expirationTimeInSeconds = 86400;
-		const currentTimestamp = Math.floor(Date.now() / 1000);
-		const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+		const now = Math.floor(Date.now() / 1000);
+		const expiresAt = now + expirationTimeInSeconds;
 
 		const token = ChatTokenBuilder.buildUserToken(
 			appId,
@@ -46,7 +41,7 @@ export async function GET(request: NextRequest) {
 				appId,
 				userId,
 				expiresIn: expirationTimeInSeconds,
-				expiresAt: new Date(privilegeExpiredTs * 1000).toISOString(),
+				expiresAt: new Date(expiresAt * 1000).toISOString(),
 			},
 		});
 	} catch (error) {

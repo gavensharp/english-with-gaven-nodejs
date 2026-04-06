@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
       parseInt(uid),
       RtcRole.PUBLISHER,
       privilegeExpiredTs,
+      privilegeExpiredTs,
     );
 
     return NextResponse.json({
