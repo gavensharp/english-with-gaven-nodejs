@@ -32,6 +32,7 @@ export default function Home() {
                   src="https://www.youtube.com/embed/sJ7a7FAJirQ?si=o6bBgKfOURkAM6GF"
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
                   loading="lazy"
                 />
