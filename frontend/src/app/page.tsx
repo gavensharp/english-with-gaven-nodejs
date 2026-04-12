@@ -25,8 +25,8 @@ export default function Home() {
             </div>
 
             {/* Hero Video */}
-            <div className="text-center mt-4">
-              <div className="relative pb-[56.25%] rounded-[20px] overflow-hidden shadow-lg border-2 border-neutral ">
+            <div className="mt-4 w-full max-w-4xl mx-auto px-2 sm:px-0">
+              <div className="relative aspect-video rounded-[20px] overflow-hidden shadow-lg border-2 border-neutral">
                 <iframe
                   className="absolute top-0 left-0 w-full h-full"
                   src="https://www.youtube.com/embed/sJ7a7FAJirQ?si=2Fo_7f1VQE09_kmY"
