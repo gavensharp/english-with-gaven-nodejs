@@ -56,8 +56,9 @@ export default function About() {
               <div className="relative pb-[56.25%] rounded-[20px] overflow-hidden shadow-lg border-2 border-border">
                 <iframe
                   className="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/CctkrR7NkfY?si=Tm4-twBRMYsX02ZC"
+                  src="https://www.youtube.com/embed/CctkrR7NkfY?si=jcK_XkKELvCzchGS"
                   title="YouTube video player"
+                  frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
