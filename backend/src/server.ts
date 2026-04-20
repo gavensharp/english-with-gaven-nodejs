@@ -26,7 +26,11 @@ const API_PREFIXES = [
 
 export function createApp() {
   const app = express();
-  const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+  const frontendOrigins = (
+    process.env.CORS_ORIGIN ||
+    process.env.FRONTEND_URL ||
+    "http://localhost:3000"
+  )
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
@@ -167,7 +171,11 @@ export async function startServer() {
   const app = createApp();
   const PORT = parseInt(process.env.PORT || "3001", 10);
   const HOST = process.env.HOST || "0.0.0.0";
-  const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+  const frontendOrigins = (
+    process.env.CORS_ORIGIN ||
+    process.env.FRONTEND_URL ||
+    "http://localhost:3000"
+  )
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);

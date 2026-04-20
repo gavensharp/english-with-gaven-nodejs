@@ -1,4 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "");
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (backendUrl ? `${backendUrl}/api` : "/api");
 
 export interface AvailabilitySlot {
   id: number;

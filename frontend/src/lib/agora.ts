@@ -3,8 +3,10 @@
  * Contains shared configuration and helper functions for Agora SDK
  */
 
-// Backend API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const backendUrl = (
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001"
+).replace(/\/$/, "");
+const API_URL = process.env.NEXT_PUBLIC_API_URL || `${backendUrl}/api`;
 
 export const agoraConfig = {
   appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",

@@ -9,7 +9,6 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
-require("dotenv/config");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const next_1 = __importDefault(require("next"));
@@ -32,7 +31,9 @@ const API_PREFIXES = [
 ];
 function createApp() {
     const app = (0, express_1.default)();
-    const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+    const frontendOrigins = (process.env.CORS_ORIGIN ||
+        process.env.FRONTEND_URL ||
+        "http://localhost:3000")
         .split(",")
         .map((origin) => origin.trim())
         .filter(Boolean);
@@ -134,7 +135,9 @@ async function startServer() {
     const app = createApp();
     const PORT = parseInt(process.env.PORT || "3001", 10);
     const HOST = process.env.HOST || "0.0.0.0";
-    const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+    const frontendOrigins = (process.env.CORS_ORIGIN ||
+        process.env.FRONTEND_URL ||
+        "http://localhost:3000")
         .split(",")
         .map((origin) => origin.trim())
         .filter(Boolean);
@@ -144,7 +147,8 @@ async function startServer() {
     const dbConnected = await (0, db_1.testDatabaseConnection)();
     if (!dbConnected) {
         console.error("⚠️  Server starting without database connection");
-        console.error("⚠️  Please check your DATABASE_URL in .env file");
+        console.error("⚠️  Please check the runtime DATABASE_URL environment variable");
+        console.error("⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel");
     }
     if (shouldMountNext) {
         await mountNextHandler(app);

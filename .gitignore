@@ -1,14 +1,18 @@
 node_modules
-# Keep environment variables out of version control
-.env
 
 /generated/prisma
 
-# Environment variables
-.env
-.env.local
-.env*.local
+# Environment secrets (all apps in monorepo)
+**/.env
+**/.env.local
+**/.env.*.local
+**/.env.production
+**/.env.development
+**/.env.test
 HOSTINGER_IMPORT.env
+
+# Keep templates tracked
+!**/.env.example
 
 # macOS Finder metadata
 .DS_Store
