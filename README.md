@@ -55,6 +55,19 @@ npm run start
 
 ## Environment Variables
 
+Use a single root env file for VPS deployments:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` with real production values.
+
+Security rule:
+
+- Keep `.env.example` sanitized with placeholders only.
+- Put real secrets only in `.env` on the server.
+
 Required:
 
 - `NODE_ENV` (set to `production` in production)

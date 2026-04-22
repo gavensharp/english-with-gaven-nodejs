@@ -51,7 +51,7 @@ export default function SessionPage() {
 
         if (!appKey) {
           throw new Error(
-            "❌ NEXT_PUBLIC_AGORA_CHAT_APP_KEY not found in .env.local",
+            "❌ NEXT_PUBLIC_AGORA_CHAT_APP_KEY not found in .env",
           );
         }
 

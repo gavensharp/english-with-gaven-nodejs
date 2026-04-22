@@ -12,7 +12,15 @@ Use these values in Hostinger's GitHub deployment settings:
 
 ## Required Environment Variables
 
-Set these in Hostinger environment settings:
+Create a root `.env` file on the VPS by copying from `.env.example`.
+
+```bash
+cp .env.example .env
+```
+
+Then set the real values in `.env`.
+
+Required:
 
 - `NODE_ENV=production`
 - `PORT` (Hostinger may inject this automatically)
