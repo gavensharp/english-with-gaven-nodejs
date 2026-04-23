@@ -67,7 +67,22 @@ export function createApp() {
       legacyHeaders: false,
     }),
   );
-  app.use(express.json({ limit: "1mb" }));
+
+  // Parse JSON only for Express-owned API routes.
+  // Next.js API routes (for example /api/login) need the raw request body stream.
+  const jsonParser = express.json({ limit: "1mb" });
+  app.use((req, res, next) => {
+    const isExpressApiRoute = API_PREFIXES.some(
+      (prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`),
+    );
+
+    if (!isExpressApiRoute) {
+      next();
+      return;
+    }
+
+    jsonParser(req, res, next);
+  });
 
   // Serve static files (uploaded photos)
   app.use(
