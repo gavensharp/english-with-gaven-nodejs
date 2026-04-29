@@ -7,13 +7,20 @@ import AdminCalendar from "@/components/calendar/AdminCalendar";
 import { fetchWithAuth } from "@/lib/auth";
 
 export default function AdminPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
+  const [tzSaving, setTzSaving] = useState(false);
+  const [tzMessage, setTzMessage] = useState<string | null>(null);
+  const [timezone, setTimezone] = useState<string>(
+    user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const [checking, setChecking] = useState(true);
   const [upcomingLessons, setUpcomingLessons] = useState<any[]>([]);
 
   useEffect(() => {
+    if (user?.timezone) setTimezone(user.timezone);
+
     const checkAdminAccess = async () => {
       if (loading) return;
 
@@ -108,6 +115,35 @@ export default function AdminPage() {
     return () => clearInterval(interval);
   }, [user, loading, router]);
 
+  const saveTimezone = async () => {
+    setTzSaving(true);
+    setTzMessage(null);
+    try {
+      const res = await fetchWithAuth("/api/users/update-profile", {
+        method: "POST",
+        body: JSON.stringify({ timezone }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to save timezone");
+      }
+
+      setTzMessage("Timezone saved");
+      // Refresh auth user so calendar receives updated timezone
+      try {
+        await refreshUser();
+      } catch (e) {
+        console.warn("Failed to refresh user after timezone save", e);
+      }
+    } catch (err: any) {
+      setTzMessage(err.message || "Failed to save timezone");
+    } finally {
+      setTzSaving(false);
+      setTimeout(() => setTzMessage(null), 3000);
+    }
+  };
+
   if (loading || checking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -131,6 +167,29 @@ export default function AdminPage() {
             <p className="text-gray-600">
               Welcome, {user?.name}! Manage lesson schedules and bookings.
             </p>
+            <div className="mt-4 flex items-center gap-4">
+              <label className="text-sm font-medium">Timezone:</label>
+              <select
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className="border rounded px-2 py-1">
+                <option value="UTC">UTC</option>
+                <option value="Asia/Jakarta">Asia/Jakarta</option>
+                <option value="Europe/London">Europe/London</option>
+                <option value="America/New_York">America/New_York</option>
+                <option value="Asia/Tokyo">Asia/Tokyo</option>
+                <option value="Australia/Sydney">Australia/Sydney</option>
+              </select>
+              <button
+                onClick={saveTimezone}
+                disabled={tzSaving}
+                className="ml-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-60">
+                {tzSaving ? "Saving..." : "Save"}
+              </button>
+              {tzMessage && (
+                <div className="text-sm text-gray-600">{tzMessage}</div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
