@@ -1,10 +1,21 @@
+import "dotenv/config";
+import type { PrismaClient as PrismaClientType } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is not set. Check backend/.env for local dev.");
+}
+
+const adapter = new PrismaMariaDb(databaseUrl);
+
+const globalForPrisma = global as unknown as { prisma: PrismaClientType };
 
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
+    adapter,
     log: ["query", "error", "warn"], // Enable logging
   });
 
