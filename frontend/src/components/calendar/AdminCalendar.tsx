@@ -5,6 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import {
   getAllSlots,
   getAllLessons,
@@ -14,7 +15,11 @@ import {
   Lesson,
 } from "@/services/lessonService";
 
-export default function AdminCalendar() {
+interface AdminCalendarProps {
+  timezone: string;
+}
+
+export default function AdminCalendar({ timezone }: AdminCalendarProps) {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(
@@ -29,6 +34,8 @@ export default function AdminCalendar() {
     endTime: "",
     notes: "",
   });
+
+  const calendarTimeZone = timezone || "UTC";
 
   useEffect(() => {
     fetchData();
@@ -97,23 +104,28 @@ export default function AdminCalendar() {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatInTimeZone(new Date(dateString), calendarTimeZone, "HH:mm");
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return formatInTimeZone(
+      new Date(dateString),
+      calendarTimeZone,
+      "dd/MM/yyyy, HH:mm:ss",
+    );
   };
 
   const handleDateClick = (info: any) => {
     // Set default times for new slot
-    const startTime = new Date(info.date);
-    startTime.setHours(9, 0, 0, 0);
-
-    const endTime = new Date(info.date);
-    endTime.setHours(17, 0, 0, 0); // 8-hour block by default
+    const dayString = formatInTimeZone(
+      info.date,
+      calendarTimeZone,
+      "yyyy-MM-dd",
+    );
 
     setNewSlot({
-      startTime: startTime.toISOString().slice(0, 16),
-      endTime: endTime.toISOString().slice(0, 16),
+      startTime: `${dayString}T09:00`,
+      endTime: `${dayString}T17:00`,
       notes: "",
     });
     setShowCreateModal(true);
@@ -143,7 +155,20 @@ export default function AdminCalendar() {
     }
 
     try {
-      await createAvailabilitySlot(newSlot, token);
+      await createAvailabilitySlot(
+        {
+          startTime: fromZonedTime(
+            newSlot.startTime,
+            calendarTimeZone,
+          ).toISOString(),
+          endTime: fromZonedTime(
+            newSlot.endTime,
+            calendarTimeZone,
+          ).toISOString(),
+          notes: newSlot.notes,
+        },
+        token,
+      );
       alert("Availability slot created successfully!");
       setShowCreateModal(false);
       setNewSlot({ startTime: "", endTime: "", notes: "" });
@@ -214,6 +239,7 @@ export default function AdminCalendar() {
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
+        timeZone={calendarTimeZone}
         headerToolbar={{
           left: "prev,next today",
           center: "title",
@@ -310,12 +336,10 @@ export default function AdminCalendar() {
 
             <div className="space-y-2 mb-6">
               <p>
-                <strong>Start:</strong>{" "}
-                {new Date(selectedSlot.startTime).toLocaleString()}
+                <strong>Start:</strong> {formatDateTime(selectedSlot.startTime)}
               </p>
               <p>
-                <strong>End:</strong>{" "}
-                {new Date(selectedSlot.endTime).toLocaleString()}
+                <strong>End:</strong> {formatDateTime(selectedSlot.endTime)}
               </p>
               <p>
                 <strong>Booked Lessons:</strong>{" "}
@@ -359,11 +383,10 @@ export default function AdminCalendar() {
               </p>
               <p>
                 <strong>Start:</strong>{" "}
-                {new Date(selectedLesson.startTime).toLocaleString()}
+                {formatDateTime(selectedLesson.startTime)}
               </p>
               <p>
-                <strong>End:</strong>{" "}
-                {new Date(selectedLesson.endTime).toLocaleString()}
+                <strong>End:</strong> {formatDateTime(selectedLesson.endTime)}
               </p>
               <p>
                 <strong>Status:</strong>{" "}

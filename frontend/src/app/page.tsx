@@ -29,7 +29,7 @@ export default function Home() {
               <div className="relative pb-[56.25%] rounded-[20px] overflow-hidden shadow-lg border-2 border-neutral ">
                 <iframe
                   className="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/CctkrR7NkfY"
+                  src="https://www.youtube.com/embed/sJ7a7FAJirQ?si=m_3FhS1Tk1-L9RE9"
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"

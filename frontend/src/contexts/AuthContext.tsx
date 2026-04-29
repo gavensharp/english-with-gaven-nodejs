@@ -1,13 +1,24 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getToken, removeToken as removeAuthToken, fetchWithAuth } from "@/lib/auth";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  getToken,
+  removeToken as removeAuthToken,
+  fetchWithAuth,
+} from "@/lib/auth";
 
 interface User {
   id: number;
   name: string;
   email: string;
   role: string;
+  timezone?: string;
   profile_photo?: string;
 }
 

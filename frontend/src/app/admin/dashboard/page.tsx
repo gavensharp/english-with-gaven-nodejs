@@ -197,7 +197,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <AdminCalendar />
+          <AdminCalendar timezone={user?.timezone || "UTC"} />
         </div>
       </div>
     </div>
