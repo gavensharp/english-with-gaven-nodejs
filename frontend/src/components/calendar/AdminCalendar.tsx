@@ -5,6 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import {
   getAllSlots,
@@ -39,7 +40,7 @@ export default function AdminCalendar({ timezone }: AdminCalendarProps) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [calendarTimeZone]);
 
   const fetchData = async () => {
     try {
@@ -237,7 +238,13 @@ export default function AdminCalendar({ timezone }: AdminCalendarProps) {
       </div>
 
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        key={calendarTimeZone}
+        plugins={[
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          momentTimezonePlugin,
+        ]}
         initialView="timeGridWeek"
         timeZone={calendarTimeZone}
         headerToolbar={{

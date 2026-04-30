@@ -119,8 +119,8 @@ export default function AdminPage() {
     setTzSaving(true);
     setTzMessage(null);
     try {
-      const res = await fetchWithAuth("/api/users/update-profile", {
-        method: "POST",
+      const res = await fetchWithAuth("/api/users/profile", {
+        method: "PUT",
         body: JSON.stringify({ timezone }),
       });
 
@@ -256,7 +256,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <AdminCalendar timezone={user?.timezone || "UTC"} />
+          <AdminCalendar timezone={timezone} />
         </div>
       </div>
     </div>

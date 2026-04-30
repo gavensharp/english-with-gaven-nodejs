@@ -5,6 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import {
   getAvailableSlots,
   bookLesson,
@@ -13,6 +14,8 @@ import {
   Lesson,
 } from "@/services/lessonService";
 import { getToken } from "@/lib/auth";
+import { useAuth } from "@/contexts/AuthContext";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 interface StudentCalendarProps {
   readOnly?: boolean;
@@ -21,6 +24,7 @@ interface StudentCalendarProps {
 export default function StudentCalendar({
   readOnly = false,
 }: StudentCalendarProps) {
+  const { user } = useAuth();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(
@@ -36,9 +40,11 @@ export default function StudentCalendar({
     message: string;
   } | null>(null);
 
+  const calendarTimeZone = user?.timezone || "Asia/Jakarta";
+
   useEffect(() => {
     fetchCalendarData();
-  }, []);
+  }, [calendarTimeZone]);
 
   useEffect(() => {
     if (!bookingStatus) return;
@@ -194,7 +200,11 @@ export default function StudentCalendar({
     const slotStart = new Date(slotData.startTime);
     setBookingData({
       duration: 30,
-      startTime: slotStart.toISOString().slice(0, 16),
+      startTime: formatInTimeZone(
+        slotStart,
+        calendarTimeZone,
+        "yyyy-MM-dd'T'HH:mm",
+      ),
     });
 
     setShowBookingModal(true);
@@ -235,7 +245,7 @@ export default function StudentCalendar({
         timeSlots.push({
           start: new Date(currentTime),
           end: slotEndTime,
-          label: `${currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })} - ${slotEndTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`,
+          label: `${formatInTimeZone(currentTime, calendarTimeZone, "HH:mm")} - ${formatInTimeZone(slotEndTime, calendarTimeZone, "HH:mm")}`,
         });
       }
 
@@ -261,12 +271,7 @@ export default function StudentCalendar({
     }
 
     try {
-      // const startTime = new Date(bookingData.startTime);
-      // const endTime = new Date(
-      //   startTime.getTime() + bookingData.duration * 60000,
-      // );
-      // FIX: Append 'Z' to force UTC interpretation OR use the actual slot's timezone
-      const startTime = new Date(bookingData.startTime + ":00.000Z");
+      const startTime = fromZonedTime(bookingData.startTime, calendarTimeZone);
       const endTime = new Date(
         startTime.getTime() + bookingData.duration * 60000,
       );
@@ -319,7 +324,7 @@ export default function StudentCalendar({
         <h2 className="text-2xl font-bold mb-2">Book a Lesson</h2>
         <p className="text-gray-600">
           Click on an available time slot to book your lesson (30 or 60
-          minutes). Availability based on Jakarta time zone.
+          minutes). Availability based on {calendarTimeZone} time zone.
         </p>
       </div>
 
@@ -349,13 +354,20 @@ export default function StudentCalendar({
 
       <div className="rounded-lg overflow-hidden border border-gray-200">
         <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          key={calendarTimeZone}
+          plugins={[
+            dayGridPlugin,
+            timeGridPlugin,
+            interactionPlugin,
+            momentTimezonePlugin,
+          ]}
           initialView="timeGridWeek"
           headerToolbar={{
             left: "prev,next today",
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
+          timeZone={calendarTimeZone}
           events={events}
           eventClick={handleEventClick}
           height="auto"
@@ -378,23 +390,24 @@ export default function StudentCalendar({
             <div className="mb-4 p-4 bg-gray-50 rounded">
               <p className="text-sm text-gray-600">Available Slot:</p>
               <p className="font-semibold">
-                {new Date(selectedSlot.startTime).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {formatInTimeZone(
+                  new Date(selectedSlot.startTime),
+                  calendarTimeZone,
+                  "EEEE, MMMM d, yyyy",
+                )}
               </p>
               <p className="text-gray-700">
-                {new Date(selectedSlot.startTime).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}{" "}
+                {formatInTimeZone(
+                  new Date(selectedSlot.startTime),
+                  calendarTimeZone,
+                  "HH:mm",
+                )}{" "}
                 -{" "}
-                {new Date(selectedSlot.endTime).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatInTimeZone(
+                  new Date(selectedSlot.endTime),
+                  calendarTimeZone,
+                  "HH:mm",
+                )}
               </p>
             </div>
 
@@ -455,7 +468,11 @@ export default function StudentCalendar({
                     {availableTimeSlots.map((slot, index) => (
                       <option
                         key={index}
-                        value={slot.start.toISOString().slice(0, 16)}>
+                        value={formatInTimeZone(
+                          slot.start,
+                          calendarTimeZone,
+                          "yyyy-MM-dd'T'HH:mm",
+                        )}>
                         {slot.label}
                       </option>
                     ))}

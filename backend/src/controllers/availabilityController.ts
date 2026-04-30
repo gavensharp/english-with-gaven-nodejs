@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { prisma } from "../utils/db";
 
+function isIsoDateTimeWithOffset(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[+-]\d{2}:\d{2})$/.test(
+    value,
+  );
+}
+
 // Get all availability slots (public - anyone can view)
 export const getAvailableSlots = async (req: Request, res: Response) => {
   try {
@@ -74,8 +81,22 @@ export const createAvailabilitySlot = async (req: Request, res: Response) => {
         .json({ error: "Start time and end time are required" });
     }
 
+    if (
+      !isIsoDateTimeWithOffset(startTime) ||
+      !isIsoDateTimeWithOffset(endTime)
+    ) {
+      return res.status(400).json({
+        error:
+          "Start time and end time must be ISO 8601 with timezone offset (example: 2026-05-01T08:00:00.000Z)",
+      });
+    }
+
     const start = new Date(startTime);
     const end = new Date(endTime);
+
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
 
     if (start >= end) {
       return res
@@ -101,11 +122,9 @@ export const createAvailabilitySlot = async (req: Request, res: Response) => {
     });
 
     if (overlapping) {
-      return res
-        .status(400)
-        .json({
-          error: "This time slot overlaps with an existing availability slot",
-        });
+      return res.status(400).json({
+        error: "This time slot overlaps with an existing availability slot",
+      });
     }
 
     const slot = await prisma.availabilitySlot.create({
