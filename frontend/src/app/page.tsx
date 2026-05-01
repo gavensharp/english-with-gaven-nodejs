@@ -193,19 +193,22 @@ export default function Home() {
                 <h3 className="text-xl font-bold mb-3">Choose Your Plan</h3>
                 <p className="text-gray-700 text-lg">
                   Select your plan to get started.{" "}
+                  {/*
                   <a
                     href="/calendar"
                     className="text-primary  underline hover:text-accent-orange">
                     View
                   </a>{" "}
                   Gaven's availability schedule.{" "}
+                  */}
                   <a
                     href="/contact"
                     className="text-primary  underline hover:text-accent-orange">
                     Contact
                   </a>{" "}
-                  Gaven to confirm your lesson times. Starting with a free
-                  10-minute video call for an introduction.
+                  Gaven to confirm Gaven's availability and your lesson
+                  times. Starting with a free 10-minute video call for an
+                  introduction.
                 </p>
               </div>
             </div>

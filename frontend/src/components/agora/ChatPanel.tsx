@@ -100,6 +100,12 @@ export default function ChatPanel({
             setMessages((prev) => [...prev, newMessage]);
           },
           onError: (error: any) => {
+            if (
+              !error ||
+              (typeof error === "object" && Object.keys(error).length === 0)
+            ) {
+              return;
+            }
             console.error("❌ [ChatPanel] Error details:", {
               error,
               errorType: typeof error,
