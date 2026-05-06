@@ -45,6 +45,11 @@ export default function ChatPanel({
       return;
     }
 
+    if (!userRole) {
+      console.log("⏳ [ChatPanel] Waiting for user role...");
+      return;
+    }
+
     const initChat = async () => {
       try {
         console.log("🔵 [ChatPanel] Initializing chat...");
@@ -74,11 +79,39 @@ export default function ChatPanel({
           throw new Error("Failed to get token from backend");
         }
 
-        // Open connection with token
-        await chatClient.open({
-          user: userId,
-          accessToken: token,
-        });
+        if (chatClient.isOpened?.()) {
+          console.log("🔵 [ChatPanel] Closing existing session...");
+          await chatClient.close();
+        }
+
+        const openChat = async () => {
+          await chatClient.open({
+            user: userId,
+            accessToken: token,
+          });
+        };
+
+        try {
+          await openChat();
+        } catch (openError: any) {
+          const errorType = openError?.type || openError?.code;
+          const errorMessage = String(openError?.message || "");
+          const isTransient =
+            errorType === 206 ||
+            errorMessage.toLowerCase().includes("already logged") ||
+            Object.keys(openError || {}).length === 0;
+
+          if (!isTransient) {
+            throw openError;
+          }
+
+          console.warn(
+            "⚠️ [ChatPanel] Chat open failed, retrying...",
+            openError,
+          );
+          await new Promise((resolve) => setTimeout(resolve, 700));
+          await openChat();
+        }
 
         console.log("✅ [ChatPanel] Connected successfully");
         setIsConnected(true);
@@ -156,12 +189,16 @@ export default function ChatPanel({
     initChat();
 
     return () => {
+      if (chatClient?.removeEventHandler) {
+        chatClient.removeEventHandler("chatHandler");
+      }
+
       if (chatClient && isConnected) {
         console.log("🔵 [ChatPanel] Disconnecting...");
         chatClient.close();
       }
     };
-  }, [chatClient]);
+  }, [chatClient, userRole]);
 
   const handleSend = async () => {
     if (!inputText.trim() || !chatClient || !isConnected || !AgoraChat) return;
