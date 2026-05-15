@@ -10,20 +10,51 @@ exports.prisma = globalForPrisma.prisma ||
     });
 if (process.env.NODE_ENV !== "production")
     globalForPrisma.prisma = exports.prisma;
+function extractPrismaError(error) {
+    const err = error;
+    return {
+        code: err?.code || "UNKNOWN",
+        message: err?.message || "Unknown database error",
+    };
+}
 // Test database connection
 async function testDatabaseConnection() {
     try {
         await exports.prisma.$connect();
         console.log("✅ Database connected successfully!");
         console.log(`📊 Database: ${process.env.DATABASE_URL?.split("@")[1]?.split("?")[0] || "login_db"}`);
-        // Optional: Run a simple query to verify
+        // Verify schema readiness with a simple query.
         const userCount = await exports.prisma.user.count();
         console.log(`👥 Total users in database: ${userCount}`);
-        return true;
+        return {
+            ok: true,
+            stage: "query",
+            message: "Database connection and schema check passed",
+        };
     }
     catch (error) {
-        console.error("❌ Database connection failed:", error);
-        return false;
+        const { code, message } = extractPrismaError(error);
+        const schemaNotReady = code === "P2021" || code === "P2022";
+        if (schemaNotReady) {
+            console.error("⚠️  Database is reachable, but schema is not ready.");
+            console.error("⚠️  This usually means required tables/columns are missing. Run migrations before enabling DB-backed routes.");
+            console.error(`⚠️  Prisma code: ${code}`);
+            return {
+                ok: false,
+                stage: "query",
+                code,
+                message,
+            };
+        }
+        console.error("❌ Database connection/authentication check failed.");
+        console.error("❌ Verify host, port, database name, username, password, and user host permissions.");
+        console.error(`❌ Prisma code: ${code}`);
+        return {
+            ok: false,
+            stage: "connect",
+            code,
+            message,
+        };
     }
 }
 // Handle cleanup on app shutdown

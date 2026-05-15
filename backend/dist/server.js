@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,29 +42,19 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
-require("dotenv/config");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const next_1 = __importDefault(require("next"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const auth_1 = __importDefault(require("./routes/auth"));
-const user_1 = __importDefault(require("./routes/user"));
-const lessons_1 = __importDefault(require("./routes/lessons"));
-const availability_1 = __importDefault(require("./routes/availability"));
-const admin_1 = __importDefault(require("./routes/admin"));
-const agora_1 = __importDefault(require("./routes/agora"));
-const db_1 = require("./utils/db");
-const API_PREFIXES = [
-    "/api/auth",
-    "/api/users",
-    "/api/lessons",
-    "/api/availability",
-    "/api/admin",
-    "/api/agora",
-    "/api/health",
-];
+const API_PREFIXES = ["/api", "/api/health"];
+function isLeanHostingTestMode() {
+    return process.env.LEAN_HOSTING_TEST === "true";
+}
 function createApp() {
     const app = (0, express_1.default)();
+    app.locals.runtimeDbStatus = {
+        state: "not-checked",
+    };
     const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
         .split(",")
         .map((origin) => origin.trim())
@@ -67,18 +90,34 @@ function createApp() {
         etag: true,
         immutable: false,
     }));
-    // Routes
-    app.use("/api/auth", auth_1.default);
-    app.use("/api/users", user_1.default);
-    app.use("/api/lessons", lessons_1.default);
-    app.use("/api/availability", availability_1.default);
-    app.use("/api/admin", admin_1.default);
-    app.use("/api/agora", agora_1.default);
     // Health check
     app.get("/api/health", (req, res) => {
-        res.json({ status: "OK", timestamp: new Date().toISOString() });
+        const runtimeDbStatus = req.app.locals.runtimeDbStatus ||
+            { state: "not-checked" };
+        res.json({
+            status: "OK",
+            mode: isLeanHostingTestMode() ? "lean-hosting-test" : "full",
+            db: runtimeDbStatus,
+            timestamp: new Date().toISOString(),
+        });
     });
     return app;
+}
+async function mountApiRoutes(app) {
+    const [authModule, userModule, lessonModule, availabilityModule, adminModule, agoraModule,] = await Promise.all([
+        Promise.resolve().then(() => __importStar(require("./routes/auth"))),
+        Promise.resolve().then(() => __importStar(require("./routes/user"))),
+        Promise.resolve().then(() => __importStar(require("./routes/lessons"))),
+        Promise.resolve().then(() => __importStar(require("./routes/availability"))),
+        Promise.resolve().then(() => __importStar(require("./routes/admin"))),
+        Promise.resolve().then(() => __importStar(require("./routes/agora"))),
+    ]);
+    app.use("/api/auth", authModule.default);
+    app.use("/api/users", userModule.default);
+    app.use("/api/lessons", lessonModule.default);
+    app.use("/api/availability", availabilityModule.default);
+    app.use("/api/admin", adminModule.default);
+    app.use("/api/agora", agoraModule.default);
 }
 function registerErrorHandler(app) {
     app.use((err, req, res, next) => {
@@ -134,17 +173,55 @@ async function startServer() {
     const app = createApp();
     const PORT = parseInt(process.env.PORT || "3001", 10);
     const HOST = process.env.HOST || "0.0.0.0";
+    const leanHostingTestMode = isLeanHostingTestMode();
     const frontendOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
         .split(",")
         .map((origin) => origin.trim())
         .filter(Boolean);
     const shouldMountNext = process.env.MOUNT_NEXT_IN_BACKEND === "true" ||
         process.env.NODE_ENV === "production";
-    // Test database connection first
-    const dbConnected = await (0, db_1.testDatabaseConnection)();
-    if (!dbConnected) {
-        console.error("⚠️  Server starting without database connection");
-        console.error("⚠️  Please check your DATABASE_URL in .env file");
+    if (leanHostingTestMode) {
+        app.locals.runtimeDbStatus = {
+            state: "skipped",
+            message: "LEAN_HOSTING_TEST=true",
+        };
+        console.log("🧪 LEAN_HOSTING_TEST=true: skipping DB check and API route mount");
+        app.get("/api/smoke", (req, res) => {
+            res.json({
+                status: "OK",
+                service: "express",
+                mode: "lean-hosting-test",
+            });
+        });
+    }
+    else {
+        await mountApiRoutes(app);
+        // Lazy import keeps lean smoke boot free from Prisma initialization.
+        const { testDatabaseConnection } = await Promise.resolve().then(() => __importStar(require("./utils/db")));
+        const dbCheck = await testDatabaseConnection();
+        app.locals.runtimeDbStatus = dbCheck.ok
+            ? {
+                state: "connected",
+                message: dbCheck.message,
+            }
+            : {
+                state: dbCheck.stage === "query" ? "schema-not-ready" : "connect-failed",
+                code: dbCheck.code,
+                message: dbCheck.message,
+            };
+        if (!dbCheck.ok) {
+            console.error("⚠️  Server starting without database connection");
+            if (dbCheck.stage === "query") {
+                console.error("⚠️  Database credentials look reachable, but schema appears incomplete.");
+                console.error("⚠️  Run prisma migrations, then redeploy and re-test DB-backed routes.");
+            }
+            else {
+                console.error("⚠️  Please check runtime DATABASE_URL and database user host permissions.");
+                console.error("⚠️  For Hostinger deployments, update DATABASE_URL in the Node.js app Environment Variables panel.");
+            }
+            console.error(`⚠️  DB check code: ${dbCheck.code || "UNKNOWN"}`);
+            console.error(`⚠️  DB check message: ${dbCheck.message}`);
+        }
     }
     if (shouldMountNext) {
         await mountNextHandler(app);

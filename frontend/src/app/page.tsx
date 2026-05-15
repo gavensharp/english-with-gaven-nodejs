@@ -194,12 +194,12 @@ export default function Home() {
                 <h3 className="text-xl font-bold mb-3">Choose Your Plan</h3>
                 <p className="text-gray-700 text-lg">
                   Select your plan to get started.{" "}
-                  <a
+                  {/* <a
                     href="/calendar"
                     className="text-primary  underline hover:text-accent-orange">
                     View
                   </a>{" "}
-                  Gaven's availability schedule.{" "}
+                  Gaven's availability schedule.{" "} */}
                   <a
                     href="/contact"
                     className="text-primary  underline hover:text-accent-orange">
