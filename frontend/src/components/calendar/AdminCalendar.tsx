@@ -256,8 +256,8 @@ export default function AdminCalendar({ timezone }: AdminCalendarProps) {
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         height="auto"
-        slotMinTime="06:00:00"
-        slotMaxTime="22:00:00"
+        slotMinTime="08:00:00"
+        slotMaxTime="21:00:00"
         allDaySlot={false}
         nowIndicator={true}
         editable={false}

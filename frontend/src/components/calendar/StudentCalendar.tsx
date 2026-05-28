@@ -372,7 +372,7 @@ export default function StudentCalendar({
           eventClick={handleEventClick}
           height="auto"
           slotMinTime="06:00:00"
-          slotMaxTime="22:00:00"
+          slotMaxTime="24:00:00"
           allDaySlot={false}
           nowIndicator={true}
           editable={false}
