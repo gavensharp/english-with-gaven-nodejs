@@ -15,8 +15,18 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    const contentType = response.headers.get("content-type") || "";
+    const responseText = await response.text();
+
+    if (contentType.includes("application/json")) {
+      const data = responseText ? JSON.parse(responseText) : {};
+      return NextResponse.json(data, { status: response.status });
+    }
+
+    return new NextResponse(responseText, {
+      status: response.status,
+      headers: contentType ? { "Content-Type": contentType } : undefined,
+    });
   } catch (error) {
     console.error("Signup proxy error:", error);
     return NextResponse.json(
