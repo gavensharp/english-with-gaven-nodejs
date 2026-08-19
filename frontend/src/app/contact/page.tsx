@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description:
       "Get in touch with Gaven for English lessons and tutoring inquiries",
     images: ["/site-images/logo.png"],
-    url: "https://englishwithgaven.com/contact",
+    url: "https://englishwithgaven@gmail.com/contact",
     type: "website",
   },
   twitter: {
@@ -139,22 +139,14 @@ export default function Contact() {
                 </h2>
 
                 <div className="card p-6 mb-4">
-                  <h3 className="font-bold text-lg mb-2">Primary Email</h3>
-                  <a
-                    href="mailto:gaven@englishwithgaven.com"
-                    className="text-primary hover:text-secondary transition text-lg">
-                    gaven@englishwithgaven.com
-                  </a>
-                </div>
-
-                <div className="card p-6">
-                  <h3 className="font-bold text-lg mb-2">Secondary Email</h3>
+                  <h3 className="font-bold text-lg mb-2">Email</h3>
                   <a
                     href="mailto:englishwithgaven@gmail.com"
-                    className="text-primary hover:text-secondary transition text-lg">
+                    className="text-primary hover:text-primary-dark transition text-lg">
                     englishwithgaven@gmail.com
                   </a>
                 </div>
+
               </div>
 
               {/* Social Media Links */}

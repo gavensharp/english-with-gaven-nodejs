@@ -6,7 +6,6 @@ import helmet from "helmet";
 import path from "path";
 import fs from "fs";
 import next from "next";
-import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import lessonRoutes from "./routes/lessons";
@@ -14,6 +13,7 @@ import availabilityRoutes from "./routes/availability";
 import adminRoutes from "./routes/admin";
 import agoraRoutes from "./routes/agora";
 import { testDatabaseConnection } from "./utils/db";
+import { createRateLimiter } from "./utils/rateLimit";
 
 const API_PREFIXES = [
   "/api/auth",
@@ -61,11 +61,10 @@ export function createApp() {
   );
   app.use(
     "/api",
-    rateLimit({
+    createRateLimiter({
+      redisPrefix: "rl:api:",
       windowMs: 15 * 60 * 1000,
       max: 300,
-      standardHeaders: true,
-      legacyHeaders: false,
     }),
   );
 

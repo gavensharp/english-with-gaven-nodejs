@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createApp = createApp;
 exports.startServer = startServer;
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression"));
@@ -12,7 +13,6 @@ const helmet_1 = __importDefault(require("helmet"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const next_1 = __importDefault(require("next"));
-const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const user_1 = __importDefault(require("./routes/user"));
 const lessons_1 = __importDefault(require("./routes/lessons"));
@@ -20,6 +20,7 @@ const availability_1 = __importDefault(require("./routes/availability"));
 const admin_1 = __importDefault(require("./routes/admin"));
 const agora_1 = __importDefault(require("./routes/agora"));
 const db_1 = require("./utils/db");
+const rateLimit_1 = require("./utils/rateLimit");
 const API_PREFIXES = [
     "/api/auth",
     "/api/users",
@@ -55,13 +56,22 @@ function createApp() {
         },
         credentials: true,
     }));
-    app.use("/api", (0, express_rate_limit_1.default)({
+    app.use("/api", (0, rateLimit_1.createRateLimiter)({
+        redisPrefix: "rl:api:",
         windowMs: 15 * 60 * 1000,
         max: 300,
-        standardHeaders: true,
-        legacyHeaders: false,
     }));
-    app.use(express_1.default.json({ limit: "1mb" }));
+    // Parse JSON only for Express-owned API routes.
+    // Next.js API routes (for example /api/login) need the raw request body stream.
+    const jsonParser = express_1.default.json({ limit: "1mb" });
+    app.use((req, res, next) => {
+        const isExpressApiRoute = API_PREFIXES.some((prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`));
+        if (!isExpressApiRoute) {
+            next();
+            return;
+        }
+        jsonParser(req, res, next);
+    });
     // Serve static files (uploaded photos)
     app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "../public/uploads"), {
         maxAge: "7d",

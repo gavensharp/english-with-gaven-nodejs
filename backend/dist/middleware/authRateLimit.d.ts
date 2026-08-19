@@ -1,3 +1,2 @@
-import { NextFunction, Request, Response } from "express";
-export declare function authRateLimit(req: Request, res: Response, next: NextFunction): void | Response<any, Record<string, any>>;
+export declare const authRateLimit: import("express-rate-limit").RateLimitRequestHandler;
 //# sourceMappingURL=authRateLimit.d.ts.map

@@ -2,10 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prisma = void 0;
 exports.testDatabaseConnection = testDatabaseConnection;
+require("dotenv/config");
 const client_1 = require("@prisma/client");
+const adapter_mariadb_1 = require("@prisma/adapter-mariadb");
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+    throw new Error("DATABASE_URL is not set. Check backend/.env for local dev.");
+}
+const adapter = new adapter_mariadb_1.PrismaMariaDb(databaseUrl);
 const globalForPrisma = global;
 exports.prisma = globalForPrisma.prisma ||
     new client_1.PrismaClient({
+        adapter,
         log: ["query", "error", "warn"], // Enable logging
     });
 if (process.env.NODE_ENV !== "production")

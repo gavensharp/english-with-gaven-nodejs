@@ -1,40 +1,10 @@
-import { NextFunction, Request, Response } from "express";
+import { createRateLimiter } from "../utils/rateLimit";
 
-type Bucket = {
-  count: number;
-  resetAt: number;
-};
-
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 10;
-const buckets = new Map<string, Bucket>();
-
-function getClientKey(req: Request) {
-  const ip = req.ip || req.socket.remoteAddress || "unknown";
-  const email =
-    typeof req.body?.email === "string" ? req.body.email.toLowerCase() : "";
-  return `${ip}:${email}`;
-}
-
-export function authRateLimit(req: Request, res: Response, next: NextFunction) {
-  const now = Date.now();
-  const key = getClientKey(req);
-  const existing = buckets.get(key);
-
-  if (!existing || now > existing.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return next();
-  }
-
-  if (existing.count >= MAX_ATTEMPTS) {
-    const retryAfterSec = Math.ceil((existing.resetAt - now) / 1000);
-    res.setHeader("Retry-After", retryAfterSec.toString());
-    return res.status(429).json({
-      error: "Too many authentication attempts. Please try again later.",
-    });
-  }
-
-  existing.count += 1;
-  buckets.set(key, existing);
-  return next();
-}
+export const authRateLimit = createRateLimiter({
+  redisPrefix: "rl:auth:",
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: {
+    error: "Too many authentication attempts. Please try again later.",
+  },
+});
